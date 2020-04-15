@@ -1,0 +1,11 @@
+E:\Visual Studio\ConsoleApp1\bin\Debug\netcoreapp3.1\ConsoleApp1.exe
+E:\Visual Studio\ConsoleApp1\bin\Debug\netcoreapp3.1\ConsoleApp1.deps.json
+E:\Visual Studio\ConsoleApp1\bin\Debug\netcoreapp3.1\ConsoleApp1.runtimeconfig.json
+E:\Visual Studio\ConsoleApp1\bin\Debug\netcoreapp3.1\ConsoleApp1.runtimeconfig.dev.json
+E:\Visual Studio\ConsoleApp1\bin\Debug\netcoreapp3.1\ConsoleApp1.dll
+E:\Visual Studio\ConsoleApp1\bin\Debug\netcoreapp3.1\ConsoleApp1.pdb
+E:\Visual Studio\ConsoleApp1\obj\Debug\netcoreapp3.1\ConsoleApp1.csprojAssemblyReference.cache
+E:\Visual Studio\ConsoleApp1\obj\Debug\netcoreapp3.1\ConsoleApp1.AssemblyInfoInputs.cache
+E:\Visual Studio\ConsoleApp1\obj\Debug\netcoreapp3.1\ConsoleApp1.AssemblyInfo.cs
+E:\Visual Studio\ConsoleApp1\obj\Debug\netcoreapp3.1\ConsoleApp1.dll
+E:\Visual Studio\ConsoleApp1\obj\Debug\netcoreapp3.1\ConsoleApp1.pdb
