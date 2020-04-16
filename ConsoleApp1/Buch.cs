@@ -6,6 +6,7 @@ namespace ConsoleApp1
 {
     class Buch
     {
+        public int BuchId { get; set; }
         public string Autor { get; set; }
         public string Land { get; set; }
         public string BildLink { get; set; }
@@ -20,22 +21,24 @@ namespace ConsoleApp1
         {
 
         }
-        public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, int _seiten, string _titel, int _jahr)
+        public Buch(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr)
         {
+            BuchId = _bookId;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
             Sprache = _sprache;
             Link = _link;
-            Seiten = _seiten;
+            Seiten = Convert.ToInt32(_seiten);
             Titel = _titel;
-            Jahr = _jahr;
+            Jahr = Convert.ToInt32(_jahr);
             Exemplare = 2;
             ErstelleExemplare();
         }
 
-        public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
+        public Buch(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
+            BuchId = _bookId;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
@@ -47,6 +50,21 @@ namespace ConsoleApp1
             Exemplare = Convert.ToInt32(_exemplare);
         }
 
+        public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
+        {
+            BuchId = Controller.lastBookId++;
+            Autor = _author;
+            Land = _land;
+            BildLink = _bildLink;
+            Sprache = _sprache;
+            Link = _link;
+            Seiten = Convert.ToInt32(_seiten);
+            Titel = _titel;
+            Jahr = Convert.ToInt32(_jahr);
+            Exemplare = Convert.ToInt32(_exemplare);
+            ErstelleExemplare();
+        }
+
         private void ErstelleExemplare()
         {
             var informations = ExemplarSchonVorhanden();
@@ -55,7 +73,7 @@ namespace ConsoleApp1
                 for (int i = 0; i < Convert.ToInt32(informations[1]); i++)
                 {
                     var neuExemplar = new Exemplar(this);
-                    Controller.exemplare.Add(neuExemplar);
+                    Controller.copies.Add(neuExemplar);
                 }
             }
             
@@ -65,9 +83,9 @@ namespace ConsoleApp1
         {
             var informations = new List<string>();
             var counter = 0;
-            for (int i = 0; i < Controller.exemplare.Count; i++)
+            for (int i = 0; i < Controller.copies.Count; i++)
             {
-                if (Controller.exemplare[i].Buch == this)
+                if (Controller.copies[i].Buch == this)
                     counter++;
             }
             if (counter == Exemplare)
@@ -81,6 +99,34 @@ namespace ConsoleApp1
         private void ÄndereExemplarZahl(int neueExemplarZahl)
         {
             Exemplare = neueExemplarZahl;
+        }
+
+        public void ÄndereEigenschaft(string neuerWert, string eigenschaft)
+        {
+            if (eigenschaft == "Autor")
+                Autor = neuerWert;
+            else if (eigenschaft == "Land")
+                Land = neuerWert;
+            else if (eigenschaft == "Titel")
+                Titel = neuerWert;
+            else if (eigenschaft == "Bildlink")
+                BildLink = neuerWert;
+            else if (eigenschaft == "Link")
+                Link = neuerWert;
+            else if (eigenschaft == "Jahr")
+                Jahr = Convert.ToInt32(neuerWert);
+            else if (eigenschaft == "Seiten")
+                Seiten = Convert.ToInt32(neuerWert);
+            else if (eigenschaft == "Sprache")
+                Sprache = neuerWert;
+            else if (eigenschaft == "Exemplare")
+            {
+                Exemplare = Convert.ToInt32(neuerWert);
+                ErstelleExemplare();
+            }
+            else
+                Console.WriteLine($"Es wurde keine Eigenschaft mit dem Namen {eigenschaft} gefunden.");
+
         }
     }
 }

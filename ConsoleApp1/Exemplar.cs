@@ -13,7 +13,8 @@ namespace ConsoleApp1
 
         public Exemplar(Buch _buch)
         {
-            ExemplarId = Controller.exemplare.Count + 1;
+            ExemplarId = Controller.lastCopyId + 1;
+            Controller.lastCopyId++;
             IstAusgeliehen = false;
             Buch = _buch;
         }
@@ -23,6 +24,11 @@ namespace ConsoleApp1
             ExemplarId = _exemplarId;
             IstAusgeliehen = _istAusgeliehen;
             Buch = _buch;
+        }
+
+        public void ÄndereEigenschaftVonExemplar(bool neuerWert)
+        {
+            IstAusgeliehen = neuerWert;
         }
     }
 }

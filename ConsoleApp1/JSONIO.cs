@@ -12,6 +12,7 @@ namespace ConsoleApp1
         public static void ReadDataBooks()
         {
             var jsonString = File.ReadAllText("books.json");
+            var bookId = 1;
             using (JsonDocument js = JsonDocument.Parse(jsonString))
             {
                 foreach (var item in js.RootElement.EnumerateArray())
@@ -21,11 +22,14 @@ namespace ConsoleApp1
                     var imageLink = item.GetProperty("imageLink").ToString();
                     var language = item.GetProperty("language").ToString();
                     var link = item.GetProperty("link").ToString();
-                    var pages = Convert.ToInt32(item.GetProperty("pages").ToString());
+                    var pages = item.GetProperty("pages").ToString();
                     var title = item.GetProperty("title").ToString();
-                    var year = Convert.ToInt32(item.GetProperty("year").ToString());
+                    var year = item.GetProperty("year").ToString();
 
-                    var Buch = new Buch(author, country, imageLink, language, link, pages, title, year);
+                    var buch = new Buch(bookId, author, country, imageLink, language, link, pages, title, year);
+                    Controller.lastBookId = buch.BuchId;
+                    bookId++;
+                    Controller.books.Add(buch);
                 }
             }
         }
@@ -46,8 +50,8 @@ namespace ConsoleApp1
         public static void ReadDataCopies()
         {
             var jsonString = File.ReadAllText("test.json");
-            Controller.exemplare = new List<Exemplar>();
-            Console.WriteLine(Controller.exemplare.Count);
+            Controller.copies = new List<Exemplar>();
+            Controller.books = new List<Buch>();
             using (JsonDocument js = JsonDocument.Parse(jsonString))
             {
                 foreach (var item in js.RootElement.EnumerateArray())
@@ -55,6 +59,7 @@ namespace ConsoleApp1
                     var exemplarId = item.GetProperty("ExemplarId").ToString();
                     var istAusgeliehen = item.GetProperty("IstAusgeliehen").ToString();
 
+                    var id = Convert.ToInt32(item.GetProperty("Buch").GetProperty("BuchId").ToString());
                     var author = item.GetProperty("Buch").GetProperty("Autor").ToString();
                     var country = item.GetProperty("Buch").GetProperty("Land").ToString();
                     var imageLink = item.GetProperty("Buch").GetProperty("BildLink").ToString();
@@ -65,16 +70,11 @@ namespace ConsoleApp1
                     var year = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Jahr").ToString());
                     var copies = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Exemplare").ToString());
 
-                    var buch = new Buch(author, country, imageLink, language, link, pages, title, year, copies);
-                    Controller.books.Add(buch);
-
+                    var buch = new Buch(id, author, country, imageLink, language, link, pages.ToString(), title, year.ToString(), copies.ToString());
                     var exemplar = new Exemplar(Convert.ToInt32(exemplarId), Convert.ToBoolean(istAusgeliehen), buch);
-                    Controller.exemplare.Add(exemplar);
+                    Controller.copies.Add(exemplar);
+                    Controller.FillBookList(buch);
                 }
-            }
-            for (int i = 0; i < Controller.exemplare.Count; i++)
-            {
-                Console.WriteLine(Controller.exemplare[i].ExemplarId);
             }
         }
 
@@ -83,6 +83,14 @@ namespace ConsoleApp1
             var controllerClass = new ControllerClass();
             var jsonString = JsonSerializer.Serialize(controllerClass);
             File.WriteAllText("controller.json", jsonString);
+        }
+
+        public static void ReadDataController()
+        {
+            var jsonString = File.ReadAllText("controller.json");
+            Controller.cc = JsonSerializer.Deserialize<ControllerClass>(jsonString);
+            Controller.lastBookId = Controller.cc.LastBookId;
+            Controller.lastCopyId = Controller.cc.LastCopyId;
         }
     }
 }
