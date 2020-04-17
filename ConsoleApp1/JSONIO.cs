@@ -49,7 +49,7 @@ namespace ConsoleApp1
 
         public static void ReadDataCopies()
         {
-            var jsonString = File.ReadAllText("test.json");
+            var jsonString = File.ReadAllText("copies.json");
             Controller.copies = new List<Exemplar>();
             Controller.books = new List<Buch>();
             using (JsonDocument js = JsonDocument.Parse(jsonString))
@@ -70,10 +70,53 @@ namespace ConsoleApp1
                     var year = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Jahr").ToString());
                     var copies = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Exemplare").ToString());
 
-                    var buch = new Buch(id, author, country, imageLink, language, link, pages.ToString(), title, year.ToString(), copies.ToString());
-                    var exemplar = new Exemplar(Convert.ToInt32(exemplarId), Convert.ToBoolean(istAusgeliehen), buch);
-                    Controller.copies.Add(exemplar);
-                    Controller.FillBookList(buch);
+                    var book = new Buch(id, author, country, imageLink, language, link, pages.ToString(), title, year.ToString(), copies.ToString());
+                    var copy = new Exemplar(Convert.ToInt32(exemplarId), Convert.ToBoolean(istAusgeliehen), book);
+                    Controller.copies.Add(copy);
+                    Controller.FillBookList(book);
+                }
+            }
+        }
+
+        public static void ReadDataRents()
+        {
+            var jsonString = File.ReadAllText("rents.json");
+            using (JsonDocument js = JsonDocument.Parse(jsonString))
+            {
+                foreach (var item in js.RootElement.EnumerateArray())
+                {
+                    var rentId = Convert.ToInt32(item.GetProperty("LeihvorgangId").ToString());
+                    var person = item.GetProperty("Person").ToString();
+                    var firstDate = item.GetProperty("Ausleihdatum").ToString();
+                    var secondDate = item.GetProperty("Rückgabedatum").ToString();
+
+                    var copyId = Convert.ToInt32(item.GetProperty("Buch").GetProperty("ExemplarId").ToString());
+                    var copy =(Exemplar) Controller.GetObjectThroughNumber(Convert.ToInt32(copyId), Controller.Area.Copy);
+
+                    Leihvorgang rent = new Leihvorgang(rentId, copy, person, firstDate, secondDate);
+                    Controller.rents.Add(rent);
+                }
+            }
+        }
+
+        public static void ReadDataDelRents()
+        {
+            var jsonString = File.ReadAllText("delrents.json");
+            using (JsonDocument js = JsonDocument.Parse(jsonString))
+            {
+                foreach (var item in js.RootElement.EnumerateArray())
+                {
+                    var rentDelId = Convert.ToInt32(item.GetProperty("GelLeihvorgangId").ToString());
+                    var rentId = Convert.ToInt32(item.GetProperty("LeihvorgangId").ToString());
+                    var person = item.GetProperty("Person").ToString();
+                    var firstDate = item.GetProperty("Ausleihdatum").ToString();
+                    var secondDate = item.GetProperty("Rückgabedatum").ToString();
+
+                    var copyId = Convert.ToInt32(item.GetProperty("Buch").GetProperty("ExemplarId").ToString());
+                    var copy = (Exemplar)Controller.GetObjectThroughNumber(Convert.ToInt32(copyId), Controller.Area.Copy);
+
+                    GelöschterLeihvorgang delRent = new GelöschterLeihvorgang(rentDelId, rentId, copy, person, firstDate, secondDate);
+                    Controller.delRents.Add(delRent);
                 }
             }
         }
@@ -91,6 +134,8 @@ namespace ConsoleApp1
             Controller.cc = JsonSerializer.Deserialize<ControllerClass>(jsonString);
             Controller.lastBookId = Controller.cc.LastBookId;
             Controller.lastCopyId = Controller.cc.LastCopyId;
+            Controller.lastRentId = Controller.cc.LastRentId;
+            Controller.lastDelRentId = Controller.cc.LastDelRentId;
         }
     }
 }

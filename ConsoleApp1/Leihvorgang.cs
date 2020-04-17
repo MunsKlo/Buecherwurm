@@ -8,32 +8,46 @@ namespace ConsoleApp1
     {
         public int LeihvorgangId { get; set; }
         public Exemplar Buch { get; set; }
-        public Person Person { get; set; }
+        public string Person { get; set; }
         public string Ausleihdatum { get; set; }
         public string Rückgabedatum { get; set; }
 
-        public Leihvorgang(int _exemplarId, Person _person, string _ausleihdatum)
+        public Leihvorgang(Exemplar _exemplar, string _person, string _ausleihdatum)
         {
-            Buch = Controller.BekommeBuchDurchExemplarId(_exemplarId);
+            LeihvorgangId = Controller.lastRentId + 1;
+            Controller.lastRentId++;
+            Buch = _exemplar;
             Person = _person;
             Ausleihdatum = _ausleihdatum;
             Rückgabedatum = ErrechneDatum(_ausleihdatum);
 
         }
 
+        public Leihvorgang(int _id, Exemplar _exemplar, string _person, string _ausleihdatum, string _rückgabedatum)
+        {
+            LeihvorgangId = _id;
+            Buch = _exemplar;
+            Person = _person;
+            Ausleihdatum = _ausleihdatum;
+            Rückgabedatum = _rückgabedatum;
+        }
 
-        private void LeihvorgangBearbeiten(string eigenschaft, string neuerWert)
+
+        public void LeihvorgangBearbeiten(string eigenschaft, string neuerWert)
         {
             try
             {
                 if (eigenschaft == "Buch")
-                    Buch = Controller.BekommeBuchDurchExemplarId(Convert.ToInt32(neuerWert));
-                else if (eigenschaft == "Person")
-                    Person = Controller.BekommePersonDurchPersonId(Convert.ToInt32(neuerWert));
+                    Buch = Controller.BekommeExemplarDurchId(Convert.ToInt32(neuerWert));
                 else if (eigenschaft == "Ausleihdatum")
-                    Console.WriteLine("Test");
+                {
+                    Ausleihdatum = neuerWert;
+                    ErrechneDatum(neuerWert);
+                }
                 else if (eigenschaft == "Rückgabedatum")
-                    Console.WriteLine("Test");
+                    Rückgabedatum = neuerWert;
+                else if (eigenschaft == "Person")
+                    Person = neuerWert;
             }
             catch (Exception e)
             {

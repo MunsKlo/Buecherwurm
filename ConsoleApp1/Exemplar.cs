@@ -8,7 +8,6 @@ namespace ConsoleApp1
     {
         public int ExemplarId { get; set; }
         public bool IstAusgeliehen { get; set; }
-
         public Buch Buch { get; set; }
 
         public Exemplar(Buch _buch)
@@ -24,6 +23,11 @@ namespace ConsoleApp1
             ExemplarId = _exemplarId;
             IstAusgeliehen = _istAusgeliehen;
             Buch = _buch;
+        }
+
+        public Exemplar()
+        {
+
         }
 
         public void ÄndereEigenschaftVonExemplar(bool neuerWert)

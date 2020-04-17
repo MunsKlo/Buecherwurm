@@ -53,6 +53,7 @@ namespace ConsoleApp1
         public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
             BuchId = Controller.lastBookId++;
+            Controller.lastBookId++;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
@@ -96,6 +97,15 @@ namespace ConsoleApp1
                 return new List<string> { "false", Exemplare.ToString()};
         }
 
+
+        private void LöscheExemplare(string neuerWert)
+        {
+            var listeVonExemplaren = Controller.GetPresentCopies(this);
+            if(listeVonExemplaren.Count < Exemplare - Convert.ToInt32(neuerWert))
+                Console.WriteLine("Du kannst keine Exemplare von Büchern verringern, welche zurzeit nicht verfügbar sind!");
+            else
+                Controller.DeleteCopies(this, Exemplare - Convert.ToInt32(neuerWert));
+        }
         private void ÄndereExemplarZahl(int neueExemplarZahl)
         {
             Exemplare = neueExemplarZahl;
@@ -119,10 +129,15 @@ namespace ConsoleApp1
                 Seiten = Convert.ToInt32(neuerWert);
             else if (eigenschaft == "Sprache")
                 Sprache = neuerWert;
-            else if (eigenschaft == "Exemplare")
+            else if (eigenschaft == "Exemplare" && Exemplare < Convert.ToInt32(neuerWert))
             {
                 Exemplare = Convert.ToInt32(neuerWert);
                 ErstelleExemplare();
+            }
+            else if (eigenschaft == "Exemplare" && Exemplare > Convert.ToInt32(neuerWert))
+            {
+                LöscheExemplare(neuerWert);
+                Exemplare = Convert.ToInt32(neuerWert);
             }
             else
                 Console.WriteLine($"Es wurde keine Eigenschaft mit dem Namen {eigenschaft} gefunden.");
