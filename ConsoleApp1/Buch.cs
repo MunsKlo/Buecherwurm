@@ -52,7 +52,7 @@ namespace ConsoleApp1
 
         public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
-            BuchId = Controller.lastBookId++;
+            BuchId = Controller.lastBookId + 1;
             Controller.lastBookId++;
             Autor = _author;
             Land = _land;

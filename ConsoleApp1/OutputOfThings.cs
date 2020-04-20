@@ -98,6 +98,7 @@ namespace ConsoleApp1
         {
             Console.WriteLine("Drücken Sie Enter um weiter zu kommen.");
             Console.ReadKey();
+            Console.Clear();
         }
     }
 }

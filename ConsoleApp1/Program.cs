@@ -86,6 +86,7 @@ namespace ConsoleApp1
 
         private static void ChooseCategory(string input)
         {
+            Console.Clear();
             if (input == "1")
             {
                 area = Controller.Area.Books;
@@ -118,6 +119,7 @@ namespace ConsoleApp1
             {
                 Output(new List<string> { "1. Erstellen", "2. Bearbeiten", "3. Löschen" });
                 input = Input(0, 4, "z");
+                Console.Clear();
                 if (input == "z")
                     break;
                 if (input == "1")
@@ -235,7 +237,7 @@ namespace ConsoleApp1
                     DeleteCopy();*/
             }
         }
-
+        // 
         private static void EditCopy()
         {
             var input = "";
@@ -267,6 +269,7 @@ namespace ConsoleApp1
                     }
                 }
             }
+            OutputOfThings.ReadKeyMethod();
 
         }
         /*
@@ -453,9 +456,9 @@ namespace ConsoleApp1
                                 Console.WriteLine("Es wurde kein Exemplar mit der eingegebenen Id gefunden.");
                             else
                             {
-                                copy.IstAusgeliehen = true;
                                 rent.Buch.IstAusgeliehen = false;
                                 rent.LeihvorgangBearbeiten(property, input);
+                                rent.Buch.IstAusgeliehen = true;
                             }
                                 
                         }
@@ -466,7 +469,6 @@ namespace ConsoleApp1
                         newValue = GetUserInputData("Neuer Wert", Controller.IsNumbProperty(property));
                     }
                     OutputOfThings.OutputObject(rent, area);
-                    rent.LeihvorgangBearbeiten(property, newValue);
                     OutputOfThings.ReadKeyMethod();
                 }
             }
@@ -496,7 +498,7 @@ namespace ConsoleApp1
         /// <summary>
         /// Kategorie Gelöschte Leihvorgänge
         /// </summary>
-
+        //Menü von Gelöschter Leihvorgang
         public static void CategoryDelRent()
         {
             var input = "";
@@ -511,7 +513,14 @@ namespace ConsoleApp1
                     RebuildDelRent();
             }
         }
-
+        /*
+         * Als erstes wird überprüft ob es überhaupt gelöschte Leihvorgänge existieren
+         * Danach wird nach einer Nummer für eins der Angezeigten gelöschten Leihvorgänge verlangt
+         * Mit der Nummer wird dann das Objekt in delRent gespeichert, falls das Objekt null ist, wird ein Fehler ausgegeben
+         * Falls von dem Leihvorgang das Buch nicht vorhanden ist, wird auch nochmal eine Fehlermeldung ausgegeben
+         * Falls das Objekt gefunden wurde, wird nochmal nachgefragt ob der Leihvorgang wirklich erstellt werden soll
+         * 
+         */
         public static void RebuildDelRent()
         {
             var input = "";
@@ -526,6 +535,8 @@ namespace ConsoleApp1
                     var delRent =(GelöschterLeihvorgang)Controller.GetObjectThroughNumber(Convert.ToInt32(input), area);
                     if (delRent == null)
                         Console.WriteLine("Es wurde kein Leihvorgang mit der eingegebenen Id gefunden.");
+                    else if (delRent.Buch.IstAusgeliehen)
+                        Console.WriteLine("Das Exemplar was in diesem Leihvorgang ist, ist zurzeit nicht vorhanden");
                     else
                     {
                         OutputOfThings.OutputObject(delRent, area);
@@ -548,7 +559,8 @@ namespace ConsoleApp1
             
         }
 
-
+        //Bei dieser Input-Methode wird nur überprüft (falls isInt true ist), ob es sich um eine Zahl handelt
+        //description ist die Beschreibung für den Nutzer und isInt die Aussage, ob es eine Zahl sein soll
         private static string GetUserInputData(string description, bool isInt)
         {
             var input = "";
