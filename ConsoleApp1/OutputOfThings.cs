@@ -8,7 +8,7 @@ namespace ConsoleApp1
     {
         public static void OutputLists(Controller.Area area)
         {
-            if(area == Controller.Area.Books)
+            if(area == Controller.Area.Book)
             {
                 foreach (var item in Controller.books)
                 {
@@ -16,25 +16,59 @@ namespace ConsoleApp1
                     Console.WriteLine("========================================================");
                 }
             }
+            else if(area == Controller.Area.Magazin)
+            {
+                foreach (var item in Controller.magazins)
+                {
+                    Console.WriteLine($"Buch: {item.MagazinId} {item.Titel} von {item.Autor}");
+                    Console.WriteLine("========================================================");
+                }
+            }
             else if(area == Controller.Area.Copy)
             {
                 foreach (var item in Controller.copies)
                 {
-                    Console.WriteLine($"Exemplar: {item.ExemplarId} {item.Buch.Titel} von {item.Buch.Autor}. Ist es ausgeliehen: {Controller.IsBookBorowString(item)}");
+                    var newItem = (Buch)item.Buch;
+                    Console.WriteLine($"Exemplar: {item.ExemplarId} {newItem.Titel} von {newItem.Autor}. Ist es ausgeliehen: {Controller.IsBookBorowString(item)}");
                 }
             }
             else if (area == Controller.Area.Rent)
             {
                 foreach (var item in Controller.rents)
                 {
-                    Console.WriteLine($"ID: {item.LeihvorgangId} | Person: {item.Person} | Buch: {item.Buch.Buch.Titel} von {item.Buch.Buch.Autor} | Rückgabe: {item.Rückgabedatum}");
+                    var isBook = false;
+                    if (item.Buch.Buch.GetType() == typeof(Buch))
+                        isBook = true;
+                    if (isBook)
+                    {
+                        var newItem = (Buch)item.Buch.Buch;
+                        Console.WriteLine($"ID: {item.LeihvorgangId} | Person: {item.Person} | Buch: {newItem.Titel} von {newItem.Autor} | Rückgabe: {item.Rückgabedatum}");
+                    }
+                    else
+                    {
+                        var newItem = (Magazin)item.Buch.Buch;
+                        Console.WriteLine($"ID: {item.LeihvorgangId} | Person: {item.Person} | Buch: {newItem.Titel} von {newItem.Autor} | Rückgabe: {item.Rückgabedatum}");
+                    }
+                    
                 }
             }
             else if (area == Controller.Area.DelRent)
             {
                 foreach (var item in Controller.delRents)
                 {
-                    Console.WriteLine($"ID: {item.GelLeihvorgangId} | Person: {item.Person} | Buch: {item.Buch.Buch.Titel} von {item.Buch.Buch.Autor} | Rückgabe: {item.Rückgabedatum}");
+                    var isBook = false;
+                    if (item.Buch.Buch.GetType() == typeof(Buch))
+                        isBook = true;
+                    if (isBook)
+                    {
+                        var newItem = (Buch)item.Buch.Buch;
+                        Console.WriteLine($"ID: {item.GelLeihvorgangId} | Person: {item.Person} | Buch: {newItem.Titel} von {newItem.Autor} | Rückgabe: {item.Rückgabedatum}");
+                    }
+                    else
+                    {
+                        var newItem = (Magazin)item.Buch.Buch;
+                        Console.WriteLine($"ID: {item.GelLeihvorgangId} | Person: {item.Person} | Buch: {newItem.Titel} von {newItem.Autor} | Rückgabe: {item.Rückgabedatum}");
+                    }
                 }
             }
 
@@ -54,7 +88,7 @@ namespace ConsoleApp1
         public static void OutputObject(object obj, Controller.Area area)
         {
             Console.WriteLine("Infromationen zum ausgewählten Gegenstand:");
-            if (area == Controller.Area.Books)
+            if (area == Controller.Area.Book)
             {
                 Buch newObj = (Buch)obj;
                 Console.WriteLine($"ID: {newObj.BuchId}");
@@ -72,22 +106,50 @@ namespace ConsoleApp1
                 Exemplar newObj = (Exemplar)obj;
                 Console.WriteLine($"ID: {newObj.ExemplarId}");
                 Console.WriteLine($"Ausgeliehen: {Controller.IsBookBorowString(newObj)}");
-                Console.WriteLine($"Buch: {newObj.Buch.Titel} von {newObj.Buch.Autor}");
+                var isBook = Controller.IsTypeABook(newObj.Buch);
+                if (isBook)
+                {
+                    var newItem = (Buch)newObj.Buch;
+                    Console.WriteLine($"Buch: {newItem.Titel} von {newItem.Autor}");
+                }
+                else
+                {
+                    var newItem = (Magazin)newObj.Buch;
+                    Console.WriteLine($"Buch: {newItem.Titel} von {newItem.Autor}");
+                }
+                
             }
             else if (area == Controller.Area.Rent)
             {
                 Leihvorgang newObj = (Leihvorgang)obj;
+                var isBook = Controller.IsTypeABook(newObj.Buch.Buch);
+                
                 Console.WriteLine($"ID: {newObj.LeihvorgangId}");
                 Console.WriteLine($"Person: {newObj.Person}");
-                Console.WriteLine($"Buch: {newObj.Buch.Buch.Titel} von {newObj.Buch.Buch.Autor}");
+                if (isBook)
+                {
+                    var newItem = (Buch)newObj.Buch.Buch;
+                    Console.WriteLine($"Buch: {newItem.Titel} von {newItem.Autor}");
+                }
+                else
+                {
+                    var newItem = (Magazin)newObj.Buch.Buch;
+                    Console.WriteLine($"Buch: {newItem.Titel} von {newItem.Autor}");
+                }
+                    
                 Console.WriteLine($"Ausleihadatum: {newObj.Ausleihdatum}");
                 Console.WriteLine($"Rückgabedatum: {newObj.Rückgabedatum}");
             }
             else if(area == Controller.Area.DelRent)
             {
                 GelöschterLeihvorgang newObj = (GelöschterLeihvorgang)obj;
+                var isBook = Controller.IsTypeABook(newObj.Buch.Buch);
                 Console.WriteLine($"ID: {newObj.GelLeihvorgangId}");
-                Console.WriteLine($"Buch: {newObj.Buch.Buch.Titel} von {newObj.Buch.Buch.Autor}");
+                if (isBook)
+                {
+                    var newItem = (Buch)newObj.Buch.Buch;
+                    Console.WriteLine($"Buch: {newItem.Titel} von {newItem.Autor}");
+                }
                 Console.WriteLine($"Ausgeliehene Person: {newObj.Person}");
                 Console.WriteLine($"Ausleihdatum: {newObj.Ausleihdatum}");
                 Console.WriteLine($"Rückgabedatum: {newObj.Rückgabedatum}");

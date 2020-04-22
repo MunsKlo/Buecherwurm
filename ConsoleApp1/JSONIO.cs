@@ -9,29 +9,55 @@ namespace ConsoleApp1
 {
     class JSONIO
     {
-        public static void ReadDataBooks()
+        public static void ReadData(string filename)
         {
-            var jsonString = File.ReadAllText("books.json");
+            var jsonString = File.ReadAllText(filename);
             var bookId = 1;
-            using (JsonDocument js = JsonDocument.Parse(jsonString))
+            if(filename == "copies.json")
             {
-                foreach (var item in js.RootElement.EnumerateArray())
+                using (JsonDocument js = JsonDocument.Parse(jsonString))
                 {
-                    var author = item.GetProperty("author").ToString();
-                    var country = item.GetProperty("country").ToString();
-                    var imageLink = item.GetProperty("imageLink").ToString();
-                    var language = item.GetProperty("language").ToString();
-                    var link = item.GetProperty("link").ToString();
-                    var pages = item.GetProperty("pages").ToString();
-                    var title = item.GetProperty("title").ToString();
-                    var year = item.GetProperty("year").ToString();
+                    foreach (var item in js.RootElement.EnumerateArray())
+                    {
+                        var author = item.GetProperty("author").ToString();
+                        var country = item.GetProperty("country").ToString();
+                        var imageLink = item.GetProperty("imageLink").ToString();
+                        var language = item.GetProperty("language").ToString();
+                        var link = item.GetProperty("link").ToString();
+                        var pages = item.GetProperty("pages").ToString();
+                        var title = item.GetProperty("title").ToString();
+                        var year = item.GetProperty("year").ToString();
 
-                    var buch = new Buch(bookId, author, country, imageLink, language, link, pages, title, year);
-                    Controller.lastBookId = buch.BuchId;
-                    bookId++;
-                    Controller.books.Add(buch);
+                        var buch = new Buch(bookId, author, country, imageLink, language, link, pages, title, year);
+                        Controller.lastBookId = buch.BuchId;
+                        bookId++;
+                        Controller.books.Add(buch);
+                    }
                 }
             }
+            else
+            {
+                using (JsonDocument js = JsonDocument.Parse(jsonString))
+                {
+                    foreach (var item in js.RootElement.EnumerateArray())
+                    {
+                        var author = item.GetProperty("author").ToString();
+                        var country = item.GetProperty("country").ToString();
+                        var imageLink = item.GetProperty("imageLink").ToString();
+                        var language = item.GetProperty("language").ToString();
+                        var link = item.GetProperty("link").ToString();
+                        var pages = item.GetProperty("pages").ToString();
+                        var title = item.GetProperty("title").ToString();
+                        var year = item.GetProperty("year").ToString();
+
+                        var buch = new Magazin(bookId, author, country, imageLink, language, link, pages, title, year);
+                        Controller.lastMagazinId = buch.MagazinId;
+                        bookId++;
+                        Controller.magazins.Add(buch);
+                    }
+                }
+            }
+            
         }
 
         public static void SaveData<T>(string filename, List<T> listObj)

@@ -11,16 +11,18 @@ namespace ConsoleApp1
         public static List<Buch> books = new List<Buch>();
         public static List<Leihvorgang> rents = new List<Leihvorgang>();
         public static List<GelöschterLeihvorgang> delRents = new List<GelöschterLeihvorgang>();
+        public static List<Magazin> magazins = new List<Magazin>();
         public static ControllerClass cc;
 
         public static int lastBookId;
         public static int lastCopyId;
         public static int lastRentId;
         public static int lastDelRentId;
+        public static int lastMagazinId;
 
         public enum Area
         {
-            Menu, Books, Copy, Rent, DelRent
+            Menu, Book, Magazin, Copy, Rent, DelRent
         }
 
         public static Exemplar BekommeExemplarDurchId(int id)
@@ -36,11 +38,19 @@ namespace ConsoleApp1
 
         public static object GetObjectThroughNumber(int id, Area area)
         {
-            if(area == Area.Books)
+            if(area == Area.Book)
             {
                 foreach (var item in books)
                 {
                     if (item.BuchId == id)
+                        return item;
+                }
+            }
+            if (area == Area.Magazin)
+            {
+                foreach (var item in magazins)
+                {
+                    if (item.MagazinId == id)
                         return item;
                 }
             }
@@ -128,28 +138,79 @@ namespace ConsoleApp1
             }
         }
 
-        public static void DeleteCopies(Buch book)
+        public static void DeleteMagazin(Magazin magazine)
         {
-            for (int i = 0; i < copies.Count; i++)
+            for (int i = 0; i < magazins.Count; i++)
             {
-                if(copies[i].Buch.Autor == book.Autor && copies[i].Buch.Titel == book.Titel)
+                if (magazins[i] == magazine)
                 {
-                    copies.Remove(copies[i]);
+                    magazins.Remove(magazins[i]);
                     i--;
                 }
             }
         }
 
-        public static void DeleteCopies(Buch book, int count)
+        public static void DeleteCopies(object _object)
         {
+            var type = _object.GetType();
+            var isBook = false;
+            if (type == typeof(Buch))
+                isBook = true;
+            for (int i = 0; i < copies.Count; i++)
+            {
+                if (isBook)
+                {
+                    var newObject = (Buch)_object;
+                    var newItem = (Buch)copies[i].Buch;
+                    if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel)
+                    {
+                        copies.Remove(copies[i]);
+                        i--;
+                    }
+                }
+                else
+                {
+                    var newObject = (Magazin)_object;
+                    var newItem = (Magazin)copies[i].Buch;
+                    if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel)
+                    {
+                        copies.Remove(copies[i]);
+                        i--;
+                    }
+                }
+                
+            }
+        }
+
+        public static void DeleteCopies(object _object, int count)
+        {
+            var type = _object.GetType();
+            var isBook = false;
+            if (type == typeof(Buch))
+                isBook = true;
             for (int j = 0; j < count; j++)
             {
                 for (int i = 0; i < copies.Count; i++)
                 {
-                    if (copies[i].Buch.Autor == book.Autor && copies[i].Buch.Titel == book.Titel && !copies[i].IstAusgeliehen)
+                    if (isBook)
                     {
-                        copies.Remove(copies[i]);
-                        break;
+                        var newObject = (Buch)_object;
+                        var newItem = (Buch)copies[i].Buch;
+                        if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel)
+                        {
+                            copies.Remove(copies[i]);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        var newObject = (Magazin)_object;
+                        var newItem = (Magazin)copies[i].Buch;
+                        if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel)
+                        {
+                            copies.Remove(copies[i]);
+                            break;
+                        }
                     }
                 }
             }
@@ -182,16 +243,36 @@ namespace ConsoleApp1
             }
         }
 
-        public static bool HaveDeletingBookCopieIinRents(Buch book)
+        public static bool HaveDeletingBookCopieInRents(object _object)
         {
+            var type = _object.GetType();
+            var isBook = false;
+            if (type == typeof(Buch))
+                isBook = true;
             var isCopieInRent = false;
             foreach (var item in copies)
             {
-                if(item.Buch.Autor == book.Autor && item.Buch.Titel == book.Titel && item.IstAusgeliehen)
+                if (isBook)
                 {
-                    isCopieInRent = true;
-                    break;
+                    var newObject = (Buch)_object;
+                    var newItem = (Buch)item.Buch;
+                    if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel && item.IstAusgeliehen)
+                    {
+                        isCopieInRent = true;
+                        break;
+                    }
                 }
+                else
+                {
+                    var newObject = (Magazin)_object;
+                    var newItem = (Magazin)item.Buch;
+                    if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel && item.IstAusgeliehen)
+                    {
+                        isCopieInRent = true;
+                        break;
+                    }
+                }
+                
             }
             if (isCopieInRent)
             {
@@ -241,13 +322,31 @@ namespace ConsoleApp1
             return false;
         }
 
-        public static List<Exemplar> GetPresentCopies(Buch book)
+        public static List<Exemplar> GetPresentCopies(object _object)
         {
+            var type = _object.GetType();
+            var isBook = false;
+            if (type == typeof(Buch))
+                isBook = true;
+
             var presentCopies = new List<Exemplar>();
             foreach (var item in copies)
             {
-                if (item.Buch.Autor == book.Autor && item.Buch.Titel == book.Titel && !item.IstAusgeliehen)
-                    presentCopies.Add(item);
+                if (isBook)
+                {
+                    var newObject = (Buch)_object;
+                    var newItem = (Buch)item.Buch;
+                    if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel && !item.IstAusgeliehen)
+                        presentCopies.Add(item);
+                }
+                else
+                {
+                    var newObject = (Magazin)_object;
+                    var newItem = (Magazin)item.Buch;
+                    if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel && !item.IstAusgeliehen)
+                        presentCopies.Add(item);
+                }
+                
             }
             return presentCopies;
         }
@@ -256,7 +355,7 @@ namespace ConsoleApp1
         public static int GetLowestNumberInList(Area area)
         {
             var id = 0;
-            if(area == Area.Books)
+            if(area == Area.Book)
             {
                 foreach (var item in books)
                 {
@@ -265,6 +364,17 @@ namespace ConsoleApp1
 
                     else if (id >= item.BuchId)
                         id = item.BuchId;
+                }
+            }
+            else if (area == Area.Magazin)
+            {
+                foreach (var item in magazins)
+                {
+                    if (id == 0)
+                        id = item.MagazinId;
+
+                    else if (id >= item.MagazinId)
+                        id = item.MagazinId;
                 }
             }
             else if(area == Area.Copy)
@@ -306,7 +416,7 @@ namespace ConsoleApp1
         public static int GetHighestNumberInList(Area area)
         {
             var id = 0;
-            if (area == Area.Books)
+            if (area == Area.Book)
             {
                 foreach (var item in books)
                 {
@@ -315,6 +425,17 @@ namespace ConsoleApp1
 
                     else if (id <= item.BuchId)
                         id = item.BuchId;
+                }
+            }
+            else if (area == Area.Magazin)
+            {
+                foreach (var item in magazins)
+                {
+                    if (id == 0)
+                        id = item.MagazinId;
+
+                    else if (id <= item.MagazinId)
+                        id = item.MagazinId;
                 }
             }
             else if (area == Area.Copy)
@@ -352,6 +473,11 @@ namespace ConsoleApp1
             }
             return id;
         }
+
+        public static bool IsTypeABook(object _object)
+        {
+            return _object.GetType() == typeof(Buch);
+        }
     }
 
     class ControllerClass
@@ -360,13 +486,15 @@ namespace ConsoleApp1
         public int LastCopyId { get; set; }
         public int LastRentId { get; set; }
         public int LastDelRentId { get; set; }
+        public int LastMagazinId { get; set; }
 
         public ControllerClass()
         {
             LastBookId = Controller.lastBookId;
             LastCopyId = Controller.lastCopyId;
             LastRentId = Controller.lastRentId;
-            LastDelRentId = Controller.lastDelRentId; 
+            LastDelRentId = Controller.lastDelRentId;
+            LastMagazinId = Controller.lastMagazinId;
         }
     }
 }

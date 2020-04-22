@@ -8,21 +8,29 @@ namespace ConsoleApp1
     {
         public int ExemplarId { get; set; }
         public bool IstAusgeliehen { get; set; }
-        public Buch Buch { get; set; }
+        public object Buch { get; set; }
 
-        public Exemplar(Buch _buch)
+        public Exemplar(object _object)
         {
             ExemplarId = Controller.lastCopyId + 1;
             Controller.lastCopyId++;
             IstAusgeliehen = false;
-            Buch = _buch;
+            Type type = _object.GetType();
+            if (type == typeof(Buch))
+                Buch = (Buch)_object;
+            else
+                Buch = (Magazin)_object;
         }
 
-        public Exemplar(int _exemplarId, bool _istAusgeliehen, Buch _buch)
+        public Exemplar(int _exemplarId, bool _istAusgeliehen, object _object)
         {
             ExemplarId = _exemplarId;
             IstAusgeliehen = _istAusgeliehen;
-            Buch = _buch;
+            Type type = _object.GetType();
+            if (type == typeof(Buch))
+                Buch = (Buch)_object;
+            else
+                Buch = (Magazin)_object;
         }
 
         public Exemplar()

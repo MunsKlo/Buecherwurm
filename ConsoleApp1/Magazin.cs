@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ConsoleApp1
 {
-    class Buch : IProdukt
+    class Magazin : IProdukt
     {
-        public int BuchId { get; set; }
+        public int MagazinId { get; set; }
         public string Autor { get; set; }
         public string Land { get; set; }
         public string BildLink { get; set; }
@@ -16,14 +16,13 @@ namespace ConsoleApp1
         public string Titel { get; set; }
         public int Jahr { get; set; }
         public int Exemplare { get; set; }
-
-        public Buch()
+        public Magazin()
         {
 
         }
-        public Buch(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr)
+        public Magazin(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr)
         {
-            BuchId = _bookId;
+            MagazinId = _bookId;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
@@ -36,9 +35,9 @@ namespace ConsoleApp1
             ErstelleExemplare();
         }
 
-        public Buch(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
+        public Magazin(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
-            BuchId = _bookId;
+            MagazinId = _bookId;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
@@ -50,9 +49,9 @@ namespace ConsoleApp1
             Exemplare = Convert.ToInt32(_exemplare);
         }
 
-        public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
+        public Magazin(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
-            BuchId = Controller.lastBookId + 1;
+            MagazinId = Controller.lastBookId + 1;
             Controller.lastBookId++;
             Autor = _author;
             Land = _land;
@@ -77,7 +76,7 @@ namespace ConsoleApp1
                     Controller.copies.Add(neuExemplar);
                 }
             }
-            
+
         }
 
         public List<string> ExemplarSchonVorhanden()
@@ -94,14 +93,15 @@ namespace ConsoleApp1
             else if (counter < Exemplare && counter > 0)
                 return new List<string> { "false", Convert.ToString(Exemplare - counter) };
             else
-                return new List<string> { "false", Exemplare.ToString()};
+                return new List<string> { "false", Exemplare.ToString() };
         }
 
 
         public void LöscheExemplare(string neuerWert)
         {
-            var listeVonExemplaren = Controller.GetPresentCopies(this);
-            if(listeVonExemplaren.Count < Exemplare - Convert.ToInt32(neuerWert))
+            var newObject = (object)this;
+            var listeVonExemplaren = Controller.GetPresentCopies(newObject);
+            if (listeVonExemplaren.Count < Exemplare - Convert.ToInt32(neuerWert))
                 Console.WriteLine("Du kannst keine Exemplare von Büchern verringern, welche zurzeit nicht verfügbar sind!");
             else
                 Controller.DeleteCopies(this, Exemplare - Convert.ToInt32(neuerWert));

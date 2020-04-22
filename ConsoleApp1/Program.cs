@@ -19,8 +19,8 @@ namespace ConsoleApp1
                 Controller.lastCopyId = 0;
                 Controller.lastDelRentId = 0;
                 Controller.lastRentId = 0;
-                JSONIO.ReadDataBooks();
-                JSONIO.SaveData("copies.json", Controller.copies);
+                JSONIO.ReadData("copies.json");
+                JSONIO.ReadData("Magazine.json");
             }
             else
             {
@@ -44,8 +44,8 @@ namespace ConsoleApp1
                 Console.WriteLine("===========================================================================");
                 Console.WriteLine();
                 Console.WriteLine("Schreiben Sie die Nummer der Kategorie oder 'b' um das Programm zu beenden!");
-                Output(new List<string> {"1. Bücher", "2. Exemplare", "3. Leihvorgang", "4. Gelöschte Leihvorgänge" });
-                input = Input(0, 4, "b");
+                Output(new List<string> {"1. Bücher", "2. Magazine" , "3. Exemplare", "4. Leihvorgang", "5. Gelöschte Leihvorgänge", "" });
+                input = Input(0, 5, "b");
                 if (input == "b")
                     break;
                 Console.Clear();
@@ -53,7 +53,9 @@ namespace ConsoleApp1
             }
             //Speichere die Daten
             JSONIO.SaveDataController();
+            JSONIO.SaveData("copies.json", Controller.copies);
             JSONIO.SaveData("newbooks.json", Controller.books);
+            JSONIO.SaveData("magazines.json", Controller.magazins);
             JSONIO.SaveData("rents.json", Controller.rents);
             JSONIO.SaveData("delrents.json", Controller.delRents);
             JSONIO.SaveData("copies.json", Controller.copies);
@@ -89,20 +91,25 @@ namespace ConsoleApp1
             Console.Clear();
             if (input == "1")
             {
-                area = Controller.Area.Books;
+                area = Controller.Area.Book;
                 CategoryBook();
             }
             else if(input == "2")
             {
+                area = Controller.Area.Magazin;
+                CategoryMagazin();
+            }
+            else if (input == "3")
+            {
                 area = Controller.Area.Copy;
                 CategoryCopy();
             }
-            else if (input == "3")
+            else if (input == "4")
             {
                 area = Controller.Area.Rent;
                 CategoryRent();
             }
-            else if (input == "4")
+            else if (input == "5")
             {
                 area = Controller.Area.DelRent;
                 CategoryDelRent();
@@ -201,7 +208,7 @@ namespace ConsoleApp1
                     OutputOfThings.OutputObject(book, area);
                     while (true)
                     {
-                        if (Controller.HaveDeletingBookCopieIinRents(book))
+                        if (Controller.HaveDeletingBookCopieInRents(book))
                             break;
                         Console.WriteLine("Wollen Sie wirklich das Buch entfernen! [j/n]");
                         input = Console.ReadLine();
@@ -216,6 +223,116 @@ namespace ConsoleApp1
                     }
                 }
             }
+        }
+        ///
+        ///Bereich Magazine
+        ///
+
+        private static void CategoryMagazin()
+        {
+            var input = "";
+            while (true)
+            {
+                Output(new List<string> { "1. Erstellen", "2. Bearbeiten", "3. Löschen" });
+                input = Input(0, 4, "z");
+                Console.Clear();
+                if (input == "z")
+                    break;
+                if (input == "1")
+                    CreateMagazin();
+                else if (input == "2")
+                    EditMagazin();
+                else if (input == "3")
+                    DeleteMagazin();
+            }
+        }
+
+        public static void CreateMagazin()
+        {
+                Console.Clear();
+                Console.WriteLine("Füllen Sie die Daten auf");
+                var author = GetUserInputData("Autor", false);
+                var country = GetUserInputData("Land", false);
+                var imageLink = GetUserInputData("BIldlink", false);
+                var language = GetUserInputData("Sprache", false);
+                var link = GetUserInputData("Link", false);
+                var pages = GetUserInputData("Seiten", true);
+                var title = GetUserInputData("Titel", false);
+                var year = GetUserInputData("Jahr", true);
+                var exemplare = GetUserInputData("Exemplare", true);
+
+                var magazin = new Magazin(author, country, imageLink, language, link, pages, title, year, exemplare);
+                Controller.magazins.Add(magazin);
+        }
+
+        public static void EditMagazin()
+        {
+            if (Controller.books.Count != 0)
+            {
+                var property = "";
+                var newValue = "";
+                var input = "";
+                while (true)
+                {
+                    OutputOfThings.OutputLists(area);
+                    input = Input(Controller.GetLowestNumberInList(area), Controller.GetHighestNumberInList(area), "z");
+                    if (input == "z")
+                        break;
+                    var magazin = (Magazin)Controller.GetObjectThroughNumber(Convert.ToInt32(input), area);
+                    if (magazin == null)
+                        Console.WriteLine("Es wurde kein Buch mit der eingegebenen Id gefunden.");
+                    else
+                    {
+                        Console.Clear();
+                        OutputOfThings.OutputObject(magazin, area);
+                        Console.WriteLine("Was davon wollen Sie ändern?");
+                        property = GetUserInputData("Eigenschaft", false);
+                        newValue = GetUserInputData("Neuer Wert", Controller.IsNumbProperty(property));
+                        magazin.ÄndereEigenschaft(newValue, property);
+                        OutputOfThings.OutputObject(magazin, area);
+                        OutputOfThings.ReadKeyMethod();
+                    }
+                }
+
+            }
+        }
+        private static void DeleteMagazin()
+        {
+            if (Controller.magazins.Count != 0)
+            {
+                var input = "";
+                while (true)
+                {
+                    OutputOfThings.OutputLists(area);
+                    input = Input(Controller.GetLowestNumberInList(area), Controller.GetHighestNumberInList(area), "z");
+                    if (input == "z")
+                        break;
+                    var magazin = (Magazin)Controller.GetObjectThroughNumber(Convert.ToInt32(input), area);
+                    if (magazin == null)
+                        Console.WriteLine("Es wurde kein Buch mit der eingegebenen Id gefunden.");
+                    else
+                    {
+                        Console.Clear();
+                        OutputOfThings.OutputObject(magazin, area);
+                        while (true)
+                        {
+                            if (Controller.HaveDeletingBookCopieInRents(magazin))
+                                break;
+                            Console.WriteLine("Wollen Sie wirklich das Buch entfernen! [j/n]");
+                            input = Console.ReadLine();
+                            if (input == "j")
+                            {
+                                Controller.DeleteCopies(magazin);
+                                Controller.DeleteMagazin(magazin);
+                                break;
+                            }
+                            else if (input == "n")
+                                break;
+                        }
+                    }
+                }
+            }
+            
         }
 
         /// <summary>
@@ -261,8 +378,7 @@ namespace ConsoleApp1
                     {
                         Console.WriteLine("Exemplar ist zurzeit noch ausgeliehen, deshalb kann sich der zustand nicht ändern!");
                         OutputOfThings.ReadKeyMethod();
-                    }
-                        
+                    } 
                     else
                     {
                         copy.ÄndereEigenschaftVonExemplar(property);
@@ -352,12 +468,12 @@ namespace ConsoleApp1
             while (true)
             {
                 Console.Clear();
-                OutputOfThings.OutputLists(Controller.Area.Books);
+                OutputOfThings.OutputLists(Controller.Area.Book);
                 Console.WriteLine("Welches Buch soll ausgeliehen werden?");
-                input = Input(Controller.GetLowestNumberInList(Controller.Area.Books), Controller.GetHighestNumberInList(Controller.Area.Books), "z");
+                input = Input(Controller.GetLowestNumberInList(Controller.Area.Book), Controller.GetHighestNumberInList(Controller.Area.Book), "z");
                 if (input == "z")
                     break;
-                var book = (Buch)Controller.GetObjectThroughNumber(Convert.ToInt32(input), Controller.Area.Books);
+                var book = (Buch)Controller.GetObjectThroughNumber(Convert.ToInt32(input), Controller.Area.Book);
                 if (book == null)
                     Console.WriteLine("Es wurde kein Buch mit der eingegebenen Id gefunden.");
                 else
@@ -440,9 +556,9 @@ namespace ConsoleApp1
                     }
                     else if (property == "Buch")
                     {
-                        OutputOfThings.OutputLists(Controller.Area.Books);
-                        newValue = Input(Controller.GetLowestNumberInList(Controller.Area.Books), Controller.GetHighestNumberInList(Controller.Area.Books), "z");
-                        var book = (Buch)Controller.GetObjectThroughNumber(Convert.ToInt32(newValue), Controller.Area.Books);
+                        OutputOfThings.OutputLists(Controller.Area.Book);
+                        newValue = Input(Controller.GetLowestNumberInList(Controller.Area.Book), Controller.GetHighestNumberInList(Controller.Area.Book), "z");
+                        var book = (Buch)Controller.GetObjectThroughNumber(Convert.ToInt32(newValue), Controller.Area.Book);
                         var list = Controller.GetPresentCopies(book);
                         if (list.Count == 0)
                             Console.WriteLine("Dieses Buch ist zurzeit nicht auf Lager.");
