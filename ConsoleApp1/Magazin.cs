@@ -6,7 +6,7 @@ namespace ConsoleApp1
 {
     class Magazin : IPh_Produkt
     {
-        public int MagazinId { get; set; }
+        public int ProduktId { get; set; }
         public string Autor { get; set; }
         public string Titel { get; set; }
         public string Gruppe { get; set; }
@@ -16,9 +16,10 @@ namespace ConsoleApp1
         {
 
         }
-        public Magazin(int _bookId, string _author, string _titel, string _gruppe, string _sachgrupppe)
+        public Magazin(string _author, string _titel, string _gruppe, string _sachgrupppe)
         {
-            MagazinId = _bookId;
+            ProduktId = Controller.lastProductId + 1;
+            Controller.lastProductId++;
             Autor = _author;
             Titel = _titel;
             Gruppe = _gruppe;
@@ -29,7 +30,7 @@ namespace ConsoleApp1
 
         public Magazin(int _bookId, string _author, string _titel, string _exemplare, string _gruppe, string _sachgrupppe)
         {
-            MagazinId = _bookId;
+            ProduktId = _bookId;
             Autor = _author;
             Titel = _titel;
             Gruppe = _gruppe;
@@ -39,8 +40,8 @@ namespace ConsoleApp1
 
         public Magazin(string _author, string _titel, string _exemplare, string _gruppe, string _sachgrupppe)
         {
-            MagazinId = Controller.lastBookId + 1;
-            Controller.lastBookId++;
+            ProduktId = Controller.lastProductId + 1;
+            Controller.lastProductId++;
             Autor = _author;
             Titel = _titel;
             Gruppe = _gruppe;

@@ -15,7 +15,7 @@ namespace ConsoleApp1
             var jsonString = File.ReadAllText("books.json");
             if (!File.Exists("copies.json"))
             {
-                Controller.lastBookId = 0;
+                Controller.lastProductId = 0;
                 Controller.lastCopyId = 0;
                 Controller.lastDelRentId = 0;
                 Controller.lastRentId = 0;
@@ -27,6 +27,7 @@ namespace ConsoleApp1
             {
                 JSONIO.ReadDataController();
                 JSONIO.ReadDataCopies();
+                JSONIO.ReadDataEBooks();
                 JSONIO.ReadDataRents();
                 JSONIO.ReadDataDelRents();
             }
@@ -54,11 +55,11 @@ namespace ConsoleApp1
             }
             //Speichere die Daten
             JSONIO.SaveDataController();
-            JSONIO.SaveData("newbooks.json", Controller.books);
-            JSONIO.SaveData("magazines.json", Controller.magazins);
+            JSONIO.SaveData("products.json", Controller.products);
             JSONIO.SaveData("rents.json", Controller.rents);
             JSONIO.SaveData("delrents.json", Controller.delRents);
             JSONIO.SaveData("copies.json", Controller.copies);
+            JSONIO.SaveData("ebooks.json", Controller.eBooks);
         }
 
         private static void Output(List<string> informations)
@@ -154,13 +155,13 @@ namespace ConsoleApp1
             var exemplare = GetUserInputData("Exemplare", true);
 
             var book = new Buch(author, country, imageLink, language, link, pages, title, year, exemplare);
-            Controller.books.Add(book);
+            Controller.products.Add(book);
         }
 
         private static void EditBook()
         {
             
-            if (Controller.books.Count != 0)
+            if (Controller.products.Count != 0)
             {
                 var property = "";
                 var newValue = "";
@@ -258,12 +259,12 @@ namespace ConsoleApp1
                 var exemplare = GetUserInputData("Exemplare", true);
 
                 var magazin = new Magazin(author, title, exemplare, group, topicGroup);
-                Controller.magazins.Add(magazin);
+                Controller.products.Add(magazin);
         }
 
         public static void EditMagazin()
         {
-            if (Controller.books.Count != 0)
+            if (Controller.products.Count != 0)
             {
                 var property = "";
                 var newValue = "";
@@ -294,7 +295,7 @@ namespace ConsoleApp1
         }
         private static void DeleteMagazin()
         {
-            if (Controller.magazins.Count != 0)
+            if (Controller.products.Count != 0)
             {
                 var input = "";
                 while (true)
@@ -382,7 +383,6 @@ namespace ConsoleApp1
                 }
             }
             OutputOfThings.ReadKeyMethod();
-
         }
         /*
         private static void DeleteCopy()

@@ -10,17 +10,17 @@ namespace ConsoleApp1
         {
             if(area == Controller.Area.Book)
             {
-                foreach (var item in Controller.books)
+                foreach (var item in Controller.products)
                 {
-                    Console.WriteLine($"Buch: {item.BuchId} {item.Titel} von {item.Autor}");
+                    Console.WriteLine($"Buch: {item.ProduktId} {item.Titel} von {item.Autor}");
                     Console.WriteLine("========================================================");
                 }
             }
             else if(area == Controller.Area.Magazin)
             {
-                foreach (var item in Controller.magazins)
+                foreach (var item in Controller.products)
                 {
-                    Console.WriteLine($"Buch: {item.MagazinId} {item.Titel} von {item.Autor}");
+                    Console.WriteLine($"Buch: {item.ProduktId} {item.Titel} von {item.Autor}");
                     Console.WriteLine("========================================================");
                 }
             }
@@ -100,7 +100,7 @@ namespace ConsoleApp1
             if (area == Controller.Area.Book)
             {
                 Buch newObj = (Buch)obj;
-                Console.WriteLine($"ID: {newObj.BuchId}");
+                Console.WriteLine($"ID: {newObj.ProduktId}");
                 Console.WriteLine($"Titel: {newObj.Titel}");
                 Console.WriteLine($"Autor: {newObj.Autor}");
                 Console.WriteLine($"Seiten: {newObj.Seiten}");
@@ -113,7 +113,7 @@ namespace ConsoleApp1
             else if(area == Controller.Area.Magazin)
             {
                 Magazin newObj = (Magazin)obj;
-                Console.WriteLine($"ID: {newObj.MagazinId}");
+                Console.WriteLine($"ID: {newObj.ProduktId}");
                 Console.WriteLine($"Titel: {newObj.Titel}");
                 Console.WriteLine($"Autor: {newObj.Autor}");
                 Console.WriteLine($"Gruppe: {newObj.Gruppe}");

@@ -6,7 +6,7 @@ namespace ConsoleApp1
 {
     class Buch : IPh_Produkt
     {
-        public int BuchId { get; set; }
+        public int ProduktId { get; set; }
         public string Autor { get; set; }
         public string Land { get; set; }
         public string BildLink { get; set; }
@@ -21,24 +21,10 @@ namespace ConsoleApp1
         {
 
         }
-        public Buch(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr)
-        {
-            BuchId = _bookId;
-            Autor = _author;
-            Land = _land;
-            BildLink = _bildLink;
-            Sprache = _sprache;
-            Link = _link;
-            Seiten = Convert.ToInt32(_seiten);
-            Titel = _titel;
-            Jahr = Convert.ToInt32(_jahr);
-            Exemplare = 2;
-            ErstelleExemplare();
-        }
 
         public Buch(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
-            BuchId = _bookId;
+            ProduktId = _bookId;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
@@ -52,8 +38,8 @@ namespace ConsoleApp1
 
         public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
-            BuchId = Controller.lastBookId + 1;
-            Controller.lastBookId++;
+            ProduktId = Controller.lastProductId + 1;
+            Controller.lastProductId++;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
@@ -63,6 +49,21 @@ namespace ConsoleApp1
             Titel = _titel;
             Jahr = Convert.ToInt32(_jahr);
             Exemplare = Convert.ToInt32(_exemplare);
+            ErstelleExemplare();
+        }
+        public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr)
+        {
+            ProduktId = Controller.lastProductId + 1;
+            Controller.lastProductId++;
+            Autor = _author;
+            Land = _land;
+            BildLink = _bildLink;
+            Sprache = _sprache;
+            Link = _link;
+            Seiten = Convert.ToInt32(_seiten);
+            Titel = _titel;
+            Jahr = Convert.ToInt32(_jahr);
+            Exemplare = 2;
             ErstelleExemplare();
         }
 

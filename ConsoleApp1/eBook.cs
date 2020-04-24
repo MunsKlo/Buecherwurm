@@ -6,23 +6,23 @@ namespace ConsoleApp1
 {
     class eBook : IProdukt
     {
-        public int eBookId { get; set; }
-        public Buch buch { get; set; }
+        public int EBookId { get; set; }
+        public IPh_Produkt Produkt { get; set; }
 
         public string DownloadLink { get; set; }
         
-        public eBook(Buch _buch, string _downloadLink)
+        public eBook(IPh_Produkt _product, string _downloadLink)
         {
-            eBookId = Controller.lastEBookId + 1;
+            EBookId = Controller.lastEBookId + 1;
             Controller.lastEBookId++;
-            buch = _buch;
+            Produkt = _product;
             DownloadLink = _downloadLink;
         }
 
-        public eBook(int _eBookId, Buch _buch, string _downloadLink)
+        public eBook(int _eBookId, IPh_Produkt _product, string _downloadLink)
         {
-            eBookId = _eBookId;
-            buch = _buch;
+            EBookId = _eBookId;
+            Produkt = _product;
             DownloadLink = _downloadLink;
         }
 

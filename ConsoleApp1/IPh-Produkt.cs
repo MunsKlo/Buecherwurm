@@ -6,6 +6,7 @@ namespace ConsoleApp1
 {
     interface IPh_Produkt : IProdukt
     {
+        int ProduktId { get; set; }
         int Exemplare { get; set; }
         string Autor { get; set; }
         string Titel { get; set; }

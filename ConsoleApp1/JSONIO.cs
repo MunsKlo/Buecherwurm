@@ -10,7 +10,7 @@ namespace ConsoleApp1
         public static void ReadData(string filename)
         {
             var jsonString = File.ReadAllText(filename);
-            var bookId = 1;
+            var product = new object();
             if(filename == "books.json")
             {
                 using (JsonDocument js = JsonDocument.Parse(jsonString))
@@ -26,12 +26,8 @@ namespace ConsoleApp1
                         var title = item.GetProperty("title").ToString();
                         var year = item.GetProperty("year").ToString();
 
-                        var buch = new Buch(bookId, author, country, imageLink, language, link, pages, title, year);
-                        Controller.lastBookId = buch.BuchId;
-                        bookId++;
-                        Controller.books.Add(buch);
-
-
+                        product = new Buch(author, country, imageLink, language, link, pages, title, year);
+                        Controller.FillLists(product);
                     }
                 }
             }
@@ -43,17 +39,16 @@ namespace ConsoleApp1
                     {
                         var author = item.GetProperty("Verlag / Herausgeber").ToString();
                         var title = item.GetProperty("Titel").ToString();
-                        var rank = item.GetProperty("Rang").ToString();
                         var group = item.GetProperty("Gruppe").ToString();
                         var topicGroup = item.GetProperty("Sachgruppe").ToString();
 
-                        var magazine = new Magazin(Convert.ToInt32(rank), author, title, group, topicGroup);
-                        Controller.lastMagazinId = magazine.MagazinId;
-                        Controller.magazins.Add(magazine);
+                        product = new Magazin(author, title, group, topicGroup);
+                        Controller.FillLists(product);
                     }
                 }
             }
             
+
         }
 
         public static void SaveData<T>(string filename, List<T> listObj)
@@ -73,17 +68,16 @@ namespace ConsoleApp1
         {
             var jsonString = File.ReadAllText("copies.json");
             Controller.copies = new List<Exemplar>();
-            Controller.books = new List<Buch>();
-            Controller.magazins = new List<Magazin>();
+            Controller.products = new List<IPh_Produkt>();
             Controller.eBooks = new List<eBook>();
             var obj = new Object();
             using (JsonDocument js = JsonDocument.Parse(jsonString))
             {
                 foreach (var item in js.RootElement.EnumerateArray())
                 {
-                    if (item.GetProperty("Buch").TryGetProperty("BuchId", out JsonElement newThing))
+                    if (item.GetProperty("Buch").TryGetProperty("BildLink", out JsonElement newThing))
                     {
-                        var id = Convert.ToInt32(item.GetProperty("Buch").GetProperty("BuchId").ToString());
+                        var id = Convert.ToInt32(item.GetProperty("Buch").GetProperty("ProduktId").ToString());
                         var author = item.GetProperty("Buch").GetProperty("Autor").ToString();
                         var country = item.GetProperty("Buch").GetProperty("Land").ToString();
                         var imageLink = item.GetProperty("Buch").GetProperty("BildLink").ToString();
@@ -94,11 +88,10 @@ namespace ConsoleApp1
                         var year = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Jahr").ToString());
                         var copies = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Exemplare").ToString());
                         obj = new Buch(id, author, country, imageLink, language, link, pages.ToString(), title, year.ToString(), copies.ToString());
-                        Controller.CreateEBook(obj);
                     }
                     else
                     {
-                        var id = item.GetProperty("Buch").GetProperty("MagazinId").ToString();
+                        var id = item.GetProperty("Buch").GetProperty("ProduktId").ToString();
                         var author = item.GetProperty("Buch").GetProperty("Autor").ToString();
                         var title = item.GetProperty("Buch").GetProperty("Titel").ToString();
                         var group = item.GetProperty("Buch").GetProperty("Gruppe").ToString();
@@ -115,7 +108,7 @@ namespace ConsoleApp1
                     
                     var copy = new Exemplar(Convert.ToInt32(exemplarId), Convert.ToBoolean(istAusgeliehen), obj);
                     Controller.copies.Add(copy);
-                    Controller.FillList(obj);
+                    Controller.FillLists(obj);
                 }
             }
         }
@@ -174,12 +167,30 @@ namespace ConsoleApp1
         {
             var jsonString = File.ReadAllText("controller.json");
             Controller.cc = JsonSerializer.Deserialize<ControllerClass>(jsonString);
-            Controller.lastBookId = Controller.cc.LastBookId;
+            Controller.lastProductId = Controller.cc.LastBookId;
             Controller.lastCopyId = Controller.cc.LastCopyId;
             Controller.lastRentId = Controller.cc.LastRentId;
             Controller.lastDelRentId = Controller.cc.LastDelRentId;
-            Controller.lastMagazinId = Controller.cc.LastMagazinId;
+            Controller.lastProductId = Controller.cc.LastMagazinId;
             Controller.lastEBookId = Controller.cc.LastEBookId;
+        }
+
+        public static void ReadDataEBooks()
+        {
+            var jsonString = File.ReadAllText("ebooks.json");
+            using (JsonDocument js = JsonDocument.Parse(jsonString))
+            {
+                foreach (var item in js.RootElement.EnumerateArray())
+                {
+                    var eBookId = Convert.ToInt32(item.GetProperty("EBookId").ToString());
+                    var downloadLink = item.GetProperty("DownloadLink").ToString();
+                    var productId = Convert.ToInt32(item.GetProperty("Produkt").GetProperty("ProduktId").ToString());
+
+                    var product = (IPh_Produkt)Controller.GetObjectThroughNumber(productId, Controller.Area.Book);
+                    var eBook = new eBook(eBookId, product, downloadLink);
+                    Controller.eBooks.Add(eBook);
+                }
+            }
         }
     }
 }
