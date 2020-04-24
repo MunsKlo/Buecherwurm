@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConsoleApp1
 {
-    class Buch : IProdukt
+    class Buch : IPh_Produkt
     {
         public int BuchId { get; set; }
         public string Autor { get; set; }

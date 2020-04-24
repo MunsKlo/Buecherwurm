@@ -19,7 +19,8 @@ namespace ConsoleApp1
                 Controller.lastCopyId = 0;
                 Controller.lastDelRentId = 0;
                 Controller.lastRentId = 0;
-                JSONIO.ReadData("copies.json");
+                Controller.lastEBookId = 0;
+                JSONIO.ReadData("books.json");
                 JSONIO.ReadData("Magazine.json");
             }
             else
@@ -53,7 +54,6 @@ namespace ConsoleApp1
             }
             //Speichere die Daten
             JSONIO.SaveDataController();
-            JSONIO.SaveData("copies.json", Controller.copies);
             JSONIO.SaveData("newbooks.json", Controller.books);
             JSONIO.SaveData("magazines.json", Controller.magazins);
             JSONIO.SaveData("rents.json", Controller.rents);
@@ -252,16 +252,12 @@ namespace ConsoleApp1
                 Console.Clear();
                 Console.WriteLine("Füllen Sie die Daten auf");
                 var author = GetUserInputData("Autor", false);
-                var country = GetUserInputData("Land", false);
-                var imageLink = GetUserInputData("BIldlink", false);
-                var language = GetUserInputData("Sprache", false);
-                var link = GetUserInputData("Link", false);
-                var pages = GetUserInputData("Seiten", true);
+                var group = GetUserInputData("Land", false);
+                var topicGroup = GetUserInputData("Gruppe", false);
                 var title = GetUserInputData("Titel", false);
-                var year = GetUserInputData("Jahr", true);
                 var exemplare = GetUserInputData("Exemplare", true);
 
-                var magazin = new Magazin(author, country, imageLink, language, link, pages, title, year, exemplare);
+                var magazin = new Magazin(author, title, exemplare, group, topicGroup);
                 Controller.magazins.Add(magazin);
         }
 

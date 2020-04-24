@@ -28,8 +28,17 @@ namespace ConsoleApp1
             {
                 foreach (var item in Controller.copies)
                 {
-                    var newItem = (Buch)item.Buch;
-                    Console.WriteLine($"Exemplar: {item.ExemplarId} {newItem.Titel} von {newItem.Autor}. Ist es ausgeliehen: {Controller.IsBookBorowString(item)}");
+                    if(item.Buch.GetType() == typeof(Buch))
+                    {
+                        var newItem = (Buch)item.Buch;
+                        Console.WriteLine($"Exemplar: {item.ExemplarId} {newItem.Titel} von {newItem.Autor}. Ist es ausgeliehen: {Controller.IsBookBorowString(item)} (BUCH)");
+                    }
+                    else
+                    {
+                        var newItem = (Magazin)item.Buch;
+                        Console.WriteLine($"Exemplar: {item.ExemplarId} {newItem.Titel} von {newItem.Autor}. Ist es ausgeliehen: {Controller.IsBookBorowString(item)} (MAGAZIN)");
+                    }
+                    
                 }
             }
             else if (area == Controller.Area.Rent)
@@ -100,6 +109,16 @@ namespace ConsoleApp1
                 Console.WriteLine($"Bildlink: {newObj.BildLink}");
                 Console.WriteLine($"Exemplare: {newObj.Exemplare}");
                 Console.WriteLine($"Link: {newObj.Link}");
+            }
+            else if(area == Controller.Area.Magazin)
+            {
+                Magazin newObj = (Magazin)obj;
+                Console.WriteLine($"ID: {newObj.MagazinId}");
+                Console.WriteLine($"Titel: {newObj.Titel}");
+                Console.WriteLine($"Autor: {newObj.Autor}");
+                Console.WriteLine($"Gruppe: {newObj.Gruppe}");
+                Console.WriteLine($"Sachgruppe: {newObj.Sachgruppe}");
+                Console.WriteLine($"Exemplare: {newObj.Exemplare}");
             }
             else if (area == Controller.Area.Copy)
             {

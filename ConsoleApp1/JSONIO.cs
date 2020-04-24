@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ConsoleApp1
 {
@@ -13,7 +11,7 @@ namespace ConsoleApp1
         {
             var jsonString = File.ReadAllText(filename);
             var bookId = 1;
-            if(filename == "copies.json")
+            if(filename == "books.json")
             {
                 using (JsonDocument js = JsonDocument.Parse(jsonString))
                 {
@@ -32,6 +30,8 @@ namespace ConsoleApp1
                         Controller.lastBookId = buch.BuchId;
                         bookId++;
                         Controller.books.Add(buch);
+
+
                     }
                 }
             }
@@ -41,19 +41,15 @@ namespace ConsoleApp1
                 {
                     foreach (var item in js.RootElement.EnumerateArray())
                     {
-                        var author = item.GetProperty("author").ToString();
-                        var country = item.GetProperty("country").ToString();
-                        var imageLink = item.GetProperty("imageLink").ToString();
-                        var language = item.GetProperty("language").ToString();
-                        var link = item.GetProperty("link").ToString();
-                        var pages = item.GetProperty("pages").ToString();
-                        var title = item.GetProperty("title").ToString();
-                        var year = item.GetProperty("year").ToString();
+                        var author = item.GetProperty("Verlag / Herausgeber").ToString();
+                        var title = item.GetProperty("Titel").ToString();
+                        var rank = item.GetProperty("Rang").ToString();
+                        var group = item.GetProperty("Gruppe").ToString();
+                        var topicGroup = item.GetProperty("Sachgruppe").ToString();
 
-                        var buch = new Magazin(bookId, author, country, imageLink, language, link, pages, title, year);
-                        Controller.lastMagazinId = buch.MagazinId;
-                        bookId++;
-                        Controller.magazins.Add(buch);
+                        var magazine = new Magazin(Convert.ToInt32(rank), author, title, group, topicGroup);
+                        Controller.lastMagazinId = magazine.MagazinId;
+                        Controller.magazins.Add(magazine);
                     }
                 }
             }
@@ -78,28 +74,48 @@ namespace ConsoleApp1
             var jsonString = File.ReadAllText("copies.json");
             Controller.copies = new List<Exemplar>();
             Controller.books = new List<Buch>();
+            Controller.magazins = new List<Magazin>();
+            Controller.eBooks = new List<eBook>();
+            var obj = new Object();
             using (JsonDocument js = JsonDocument.Parse(jsonString))
             {
                 foreach (var item in js.RootElement.EnumerateArray())
                 {
+                    if (item.GetProperty("Buch").TryGetProperty("BuchId", out JsonElement newThing))
+                    {
+                        var id = Convert.ToInt32(item.GetProperty("Buch").GetProperty("BuchId").ToString());
+                        var author = item.GetProperty("Buch").GetProperty("Autor").ToString();
+                        var country = item.GetProperty("Buch").GetProperty("Land").ToString();
+                        var imageLink = item.GetProperty("Buch").GetProperty("BildLink").ToString();
+                        var language = item.GetProperty("Buch").GetProperty("Sprache").ToString();
+                        var link = item.GetProperty("Buch").GetProperty("Link").ToString();
+                        var pages = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Seiten").ToString());
+                        var title = item.GetProperty("Buch").GetProperty("Titel").ToString();
+                        var year = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Jahr").ToString());
+                        var copies = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Exemplare").ToString());
+                        obj = new Buch(id, author, country, imageLink, language, link, pages.ToString(), title, year.ToString(), copies.ToString());
+                        Controller.CreateEBook(obj);
+                    }
+                    else
+                    {
+                        var id = item.GetProperty("Buch").GetProperty("MagazinId").ToString();
+                        var author = item.GetProperty("Buch").GetProperty("Autor").ToString();
+                        var title = item.GetProperty("Buch").GetProperty("Titel").ToString();
+                        var group = item.GetProperty("Buch").GetProperty("Gruppe").ToString();
+                        var topicGroup = item.GetProperty("Buch").GetProperty("Sachgruppe").ToString();
+                        var copies = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Exemplare").ToString());
+                        obj = new Magazin(Convert.ToInt32(id), author, title, copies.ToString(), group, topicGroup);
+                    }
+                    
                     var exemplarId = item.GetProperty("ExemplarId").ToString();
                     var istAusgeliehen = item.GetProperty("IstAusgeliehen").ToString();
 
-                    var id = Convert.ToInt32(item.GetProperty("Buch").GetProperty("BuchId").ToString());
-                    var author = item.GetProperty("Buch").GetProperty("Autor").ToString();
-                    var country = item.GetProperty("Buch").GetProperty("Land").ToString();
-                    var imageLink = item.GetProperty("Buch").GetProperty("BildLink").ToString();
-                    var language = item.GetProperty("Buch").GetProperty("Sprache").ToString();
-                    var link = item.GetProperty("Buch").GetProperty("Link").ToString();
-                    var pages = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Seiten").ToString());
-                    var title = item.GetProperty("Buch").GetProperty("Titel").ToString();
-                    var year = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Jahr").ToString());
-                    var copies = Convert.ToInt32(item.GetProperty("Buch").GetProperty("Exemplare").ToString());
+                    
 
-                    var book = new Buch(id, author, country, imageLink, language, link, pages.ToString(), title, year.ToString(), copies.ToString());
-                    var copy = new Exemplar(Convert.ToInt32(exemplarId), Convert.ToBoolean(istAusgeliehen), book);
+                    
+                    var copy = new Exemplar(Convert.ToInt32(exemplarId), Convert.ToBoolean(istAusgeliehen), obj);
                     Controller.copies.Add(copy);
-                    Controller.FillBookList(book);
+                    Controller.FillList(obj);
                 }
             }
         }
@@ -162,6 +178,8 @@ namespace ConsoleApp1
             Controller.lastCopyId = Controller.cc.LastCopyId;
             Controller.lastRentId = Controller.cc.LastRentId;
             Controller.lastDelRentId = Controller.cc.LastDelRentId;
+            Controller.lastMagazinId = Controller.cc.LastMagazinId;
+            Controller.lastEBookId = Controller.cc.LastEBookId;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace ConsoleApp1
         public static List<Leihvorgang> rents = new List<Leihvorgang>();
         public static List<GelöschterLeihvorgang> delRents = new List<GelöschterLeihvorgang>();
         public static List<Magazin> magazins = new List<Magazin>();
+        public static List<eBook> eBooks = new List<eBook>();
         public static ControllerClass cc;
 
         public static int lastBookId;
@@ -19,6 +20,7 @@ namespace ConsoleApp1
         public static int lastRentId;
         public static int lastDelRentId;
         public static int lastMagazinId;
+        public static int lastEBookId;
 
         public enum Area
         {
@@ -100,19 +102,39 @@ namespace ConsoleApp1
             return newInput;
         }
 
-        public static void FillBookList(Buch newBook)
+        public static void FillList(object newObject)
         {
-            bool isBookInList = false;
-            foreach (var item in books)
+            if(newObject.GetType() == typeof(Buch))
             {
-                if (item.BuchId == newBook.BuchId)
+                bool isInList = false;
+                var newItem = (Buch)newObject;
+                foreach (var item in books)
                 {
-                    isBookInList = true;
-                    break;
+                    if (item.BuchId == newItem.BuchId)
+                    {
+                        isInList = true;
+                        break;
+                    }
                 }
+                if (!isInList)
+                    books.Add(newItem);
             }
-            if (!isBookInList)
-                books.Add(newBook);
+            else
+            {
+                bool isInList = false;
+                var newItem = (Magazin)newObject;
+                foreach (var item in magazins)
+                {
+                    if (item.MagazinId == newItem.MagazinId)
+                    {
+                        isInList = true;
+                        break;
+                    }
+                }
+                if (!isInList)
+                    magazins.Add(newItem);
+            }
+            
         }
 
         public static bool IsNumbProperty(string property)
@@ -478,6 +500,19 @@ namespace ConsoleApp1
         {
             return _object.GetType() == typeof(Buch);
         }
+
+        public static void CreateEBook(object obj)
+        {
+            var buch = (Buch)obj;
+            eBook eBook = new eBook(buch, CreateDownloadLink(buch.Titel));
+        }
+
+        public static string CreateDownloadLink(string title)
+        {
+            if (title.Contains(" "))
+                title.Replace(' ', '_');
+            return title;
+        }
     }
 
     class ControllerClass
@@ -487,6 +522,7 @@ namespace ConsoleApp1
         public int LastRentId { get; set; }
         public int LastDelRentId { get; set; }
         public int LastMagazinId { get; set; }
+        public int LastEBookId { get; set; }
 
         public ControllerClass()
         {
@@ -495,6 +531,8 @@ namespace ConsoleApp1
             LastRentId = Controller.lastRentId;
             LastDelRentId = Controller.lastDelRentId;
             LastMagazinId = Controller.lastMagazinId;
+            LastEBookId = Controller.lastEBookId;
+
         }
     }
 }

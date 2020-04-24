@@ -4,63 +4,47 @@ using System.Text;
 
 namespace ConsoleApp1
 {
-    class Magazin : IProdukt
+    class Magazin : IPh_Produkt
     {
         public int MagazinId { get; set; }
         public string Autor { get; set; }
-        public string Land { get; set; }
-        public string BildLink { get; set; }
-        public string Sprache { get; set; }
-        public string Link { get; set; }
-        public int Seiten { get; set; }
         public string Titel { get; set; }
-        public int Jahr { get; set; }
+        public string Gruppe { get; set; }
+        public string Sachgruppe { get; set; }
         public int Exemplare { get; set; }
         public Magazin()
         {
 
         }
-        public Magazin(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr)
+        public Magazin(int _bookId, string _author, string _titel, string _gruppe, string _sachgrupppe)
         {
             MagazinId = _bookId;
             Autor = _author;
-            Land = _land;
-            BildLink = _bildLink;
-            Sprache = _sprache;
-            Link = _link;
-            Seiten = Convert.ToInt32(_seiten);
             Titel = _titel;
-            Jahr = Convert.ToInt32(_jahr);
+            Gruppe = _gruppe;
+            Sachgruppe = _sachgrupppe;
             Exemplare = 2;
             ErstelleExemplare();
         }
 
-        public Magazin(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
+        public Magazin(int _bookId, string _author, string _titel, string _exemplare, string _gruppe, string _sachgrupppe)
         {
             MagazinId = _bookId;
             Autor = _author;
-            Land = _land;
-            BildLink = _bildLink;
-            Sprache = _sprache;
-            Link = _link;
-            Seiten = Convert.ToInt32(_seiten);
             Titel = _titel;
-            Jahr = Convert.ToInt32(_jahr);
+            Gruppe = _gruppe;
+            Sachgruppe = _sachgrupppe;
             Exemplare = Convert.ToInt32(_exemplare);
         }
 
-        public Magazin(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
+        public Magazin(string _author, string _titel, string _exemplare, string _gruppe, string _sachgrupppe)
         {
             MagazinId = Controller.lastBookId + 1;
             Controller.lastBookId++;
             Autor = _author;
-            Land = _land;
-            BildLink = _bildLink;
-            Sprache = _sprache;
-            Link = _link;
-            Seiten = Convert.ToInt32(_seiten);
             Titel = _titel;
-            Jahr = Convert.ToInt32(_jahr);
+            Gruppe = _gruppe;
+            Sachgruppe = _sachgrupppe;
             Exemplare = Convert.ToInt32(_exemplare);
             ErstelleExemplare();
         }
@@ -115,20 +99,12 @@ namespace ConsoleApp1
         {
             if (eigenschaft == "Autor")
                 Autor = neuerWert;
-            else if (eigenschaft == "Land")
-                Land = neuerWert;
+            else if (eigenschaft == "Gruppe")
+                Gruppe = neuerWert;
             else if (eigenschaft == "Titel")
                 Titel = neuerWert;
-            else if (eigenschaft == "Bildlink")
-                BildLink = neuerWert;
-            else if (eigenschaft == "Link")
-                Link = neuerWert;
-            else if (eigenschaft == "Jahr")
-                Jahr = Convert.ToInt32(neuerWert);
-            else if (eigenschaft == "Seiten")
-                Seiten = Convert.ToInt32(neuerWert);
-            else if (eigenschaft == "Sprache")
-                Sprache = neuerWert;
+            else if (eigenschaft == "Sachgruppe")
+                Sachgruppe = neuerWert;
             else if (eigenschaft == "Exemplare" && Exemplare < Convert.ToInt32(neuerWert))
             {
                 Exemplare = Convert.ToInt32(neuerWert);
