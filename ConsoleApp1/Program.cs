@@ -19,7 +19,7 @@ namespace ConsoleApp1
                 Controller.lastCopyId = 0;
                 Controller.lastDelRentId = 0;
                 Controller.lastRentId = 0;
-                Controller.lastEBookId = 0;
+                Controller.lastEId = 0;
                 JSONIO.ReadData("books.json");
                 JSONIO.ReadData("Magazine.json");
             }
@@ -56,10 +56,11 @@ namespace ConsoleApp1
             //Speichere die Daten
             JSONIO.SaveDataController();
             JSONIO.SaveData("products.json", Controller.products);
+            JSONIO.SaveData("copies.json", Controller.copies);
+            JSONIO.SaveData("ebooks.json", Controller.eProducts);
             JSONIO.SaveData("rents.json", Controller.rents);
             JSONIO.SaveData("delrents.json", Controller.delRents);
-            JSONIO.SaveData("copies.json", Controller.copies);
-            JSONIO.SaveData("ebooks.json", Controller.eBooks);
+            
         }
 
         private static void Output(List<string> informations)
@@ -378,7 +379,7 @@ namespace ConsoleApp1
                     } 
                     else
                     {
-                        copy.ÄndereEigenschaftVonExemplar(property);
+                        copy.ÄndereEigenschaft("", property.ToString());
                     }
                 }
             }
@@ -451,16 +452,20 @@ namespace ConsoleApp1
                 var date = GetRentBeginDate();
                 var newRent = new Leihvorgang(copy, person, date);
                 Controller.rents.Add(newRent);
-                copy.IstAusgeliehen = true;
+                if(typeof(Exemplar) == copy.GetType())
+                {
+                    var newCopy = (Exemplar)copy;
+                    newCopy.IstAusgeliehen = true;
+                }
                 Console.Clear();
                 Console.WriteLine("Leihvorgang wurde erfolgreich erstellt!");
             }
         }
 
-        public static Exemplar GetExemplar()
+        public static object GetExemplar()
         {
             var input = "";
-            var copy = new Exemplar();
+            var copy = new object();
             while (true)
             {
                 Console.Clear();
@@ -469,29 +474,40 @@ namespace ConsoleApp1
                 input = Input(Controller.GetLowestNumberInList(Controller.Area.Book), Controller.GetHighestNumberInList(Controller.Area.Book), "z");
                 if (input == "z")
                     break;
-                var book = (Buch)Controller.GetObjectThroughNumber(Convert.ToInt32(input), Controller.Area.Book);
+                var book = (IPh_Produkt)Controller.GetObjectThroughNumber(Convert.ToInt32(input), Controller.Area.Book);
                 if (book == null)
                     Console.WriteLine("Es wurde kein Buch mit der eingegebenen Id gefunden.");
                 else
                 {
-                    while (true)
+                    if (WantAEBook())
                     {
-                        var listOfCopies = Controller.GetPresentCopies(book);
-                        if (listOfCopies.Count == 0)
+                        while (true)
                         {
-                            Console.WriteLine("Dieses Buch ist zurzeit nicht vorhanden!");
-                            copy = null;
-                            break;
+                            var eBook = Controller.GetObjectThroughNumber(book.Id, Controller.Area.EProduct);
+                            return eBook;
                         }
-                        Console.WriteLine($"Diese {listOfCopies.Count} Exemplare sind vorhanden");
-                        OutputOfThings.OutputCopies(listOfCopies, area);
-                        input = GetUserInputData("Nummer vom Exemplar", true);
-                        copy = (Exemplar)Controller.GetObjectThroughNumber(Convert.ToInt32(input), Controller.Area.Copy);
-                        if (copy == null)
-                            Console.WriteLine("Es wurde kein Exemplar mit der eingegebenen Id gefunden");
-                        else
+                    }
+                    else
+                    {
+                        while (true)
                         {
-                            break;
+                            var listOfCopies = Controller.GetPresentCopies(book);
+                            if (listOfCopies.Count == 0)
+                            {
+                                Console.WriteLine("Dieses Buch ist zurzeit nicht vorhanden!");
+                                copy = null;
+                                break;
+                            }
+                            Console.WriteLine($"Diese {listOfCopies.Count} Exemplare sind vorhanden");
+                            OutputOfThings.OutputCopies(listOfCopies, area);
+                            input = GetUserInputData("Nummer vom Exemplar", true);
+                            copy = (Exemplar)Controller.GetObjectThroughNumber(Convert.ToInt32(input), Controller.Area.Copy);
+                            if (copy == null)
+                                Console.WriteLine("Es wurde kein Exemplar mit der eingegebenen Id gefunden");
+                            else
+                            {
+                                break;
+                            }
                         }
                     }
                     break;
@@ -501,6 +517,19 @@ namespace ConsoleApp1
             if (input == "z")
                 return null;
             return copy;
+        }
+
+        public static bool WantAEBook()
+        {
+            var input = "";
+            while (true)
+            {
+                Console.WriteLine("Soll ein EBook eingetragen werden? [j/n]");
+                input = Console.ReadLine();
+                if (input == "j" || input == "n")
+                    break;
+            }
+            return input == "j";
         }
 
         public static string GetPerson()
@@ -554,7 +583,7 @@ namespace ConsoleApp1
                     {
                         OutputOfThings.OutputLists(Controller.Area.Book);
                         newValue = Input(Controller.GetLowestNumberInList(Controller.Area.Book), Controller.GetHighestNumberInList(Controller.Area.Book), "z");
-                        var book = (Buch)Controller.GetObjectThroughNumber(Convert.ToInt32(newValue), Controller.Area.Book);
+                        var book = Controller.GetObjectThroughNumber(Convert.ToInt32(newValue), Controller.Area.Book);
                         var list = Controller.GetPresentCopies(book);
                         if (list.Count == 0)
                             Console.WriteLine("Dieses Buch ist zurzeit nicht auf Lager.");
@@ -568,9 +597,10 @@ namespace ConsoleApp1
                                 Console.WriteLine("Es wurde kein Exemplar mit der eingegebenen Id gefunden.");
                             else
                             {
-                                rent.Buch.IstAusgeliehen = false;
+                                copy = (Exemplar)rent.Buch;
+                                copy.IstAusgeliehen = false;
                                 rent.LeihvorgangBearbeiten(property, input);
-                                rent.Buch.IstAusgeliehen = true;
+                                copy.IstAusgeliehen = true;
                             }
                                 
                         }
@@ -579,6 +609,7 @@ namespace ConsoleApp1
                     else
                     {
                         newValue = GetUserInputData("Neuer Wert", Controller.IsNumbProperty(property));
+                        rent.LeihvorgangBearbeiten(property, newValue);
                     }
                     OutputOfThings.OutputObject(rent, area);
                     OutputOfThings.ReadKeyMethod();
@@ -600,7 +631,12 @@ namespace ConsoleApp1
                     Console.WriteLine("Es wurde kein Leihvorgang mit der eingegebenen Id gefunden.");
                 else
                 {
-                    rent.Buch.IstAusgeliehen = false;
+                    if(rent.Buch.GetType() == typeof(Exemplar))
+                    {
+                        var copy = (Exemplar)rent.Buch;
+                        copy.IstAusgeliehen = false;
+                    }
+                    
                     Controller.DeleteTheRent(rent);
                     Controller.CreateDelRent(rent);
                 }
@@ -645,22 +681,43 @@ namespace ConsoleApp1
                     if (input == "z")
                         break;
                     var delRent =(GelöschterLeihvorgang)Controller.GetObjectThroughNumber(Convert.ToInt32(input), area);
+                    var copy = delRent.Buch;
                     if (delRent == null)
                         Console.WriteLine("Es wurde kein Leihvorgang mit der eingegebenen Id gefunden.");
-                    else if (delRent.Buch.IstAusgeliehen)
-                        Console.WriteLine("Das Exemplar was in diesem Leihvorgang ist, ist zurzeit nicht vorhanden");
                     else
                     {
-                        OutputOfThings.OutputObject(delRent, area);
-                        Console.WriteLine("Wollen Sie den Leihvorgang wirklich wiederherstellen? [j/n]");
-                        input = Console.ReadLine();
-                        if (input == "j")
+                        if (copy.GetType() == typeof(Exemplar))
                         {
-                            Controller.RebuildRent(delRent);
-                            break;
+                            var newCopy = (Exemplar)copy;
+                            if (newCopy.IstAusgeliehen)
+                                Console.WriteLine("Das Exemplar was in diesem Leihvorgang ist, ist zurzeit nicht vorhanden");
+                            else
+                            {
+                                OutputOfThings.OutputObject(delRent, area);
+                                Console.WriteLine("Wollen Sie den Leihvorgang wirklich wiederherstellen? [j/n]");
+                                input = Console.ReadLine();
+                                if (input == "j")
+                                {
+                                    Controller.RebuildRent(delRent);
+                                    break;
+                                }
+                                else if (input == "n")
+                                    break;
+                            }
                         }
-                        else if (input == "n")
-                            break;
+                        else
+                        {
+                            OutputOfThings.OutputObject(delRent, area);
+                            Console.WriteLine("Wollen Sie den Leihvorgang wirklich wiederherstellen? [j/n]");
+                            input = Console.ReadLine();
+                            if (input == "j")
+                            {
+                                Controller.RebuildRent(delRent);
+                                break;
+                            }
+                            else if (input == "n")
+                                break;
+                        }
                     }
                 }
             }

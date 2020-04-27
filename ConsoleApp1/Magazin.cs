@@ -6,7 +6,7 @@ namespace ConsoleApp1
 {
     class Magazin : IPh_Produkt
     {
-        public int ProduktId { get; set; }
+        public int Id { get; set; }
         public string Autor { get; set; }
         public string Titel { get; set; }
         public string Gruppe { get; set; }
@@ -18,7 +18,7 @@ namespace ConsoleApp1
         }
         public Magazin(string _author, string _titel, string _gruppe, string _sachgrupppe)
         {
-            ProduktId = Controller.lastProductId + 1;
+            Id = Controller.lastProductId + 1;
             Controller.lastProductId++;
             Autor = _author;
             Titel = _titel;
@@ -30,7 +30,7 @@ namespace ConsoleApp1
 
         public Magazin(int _bookId, string _author, string _titel, string _exemplare, string _gruppe, string _sachgrupppe)
         {
-            ProduktId = _bookId;
+            Id = _bookId;
             Autor = _author;
             Titel = _titel;
             Gruppe = _gruppe;
@@ -40,7 +40,7 @@ namespace ConsoleApp1
 
         public Magazin(string _author, string _titel, string _exemplare, string _gruppe, string _sachgrupppe)
         {
-            ProduktId = Controller.lastProductId + 1;
+            Id = Controller.lastProductId + 1;
             Controller.lastProductId++;
             Autor = _author;
             Titel = _titel;
@@ -70,7 +70,7 @@ namespace ConsoleApp1
             var counter = 0;
             for (int i = 0; i < Controller.copies.Count; i++)
             {
-                if (Controller.copies[i].Buch == this)
+                if (Controller.copies[i].Produkt == this)
                     counter++;
             }
             if (counter == Exemplare)

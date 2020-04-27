@@ -6,10 +6,12 @@ namespace ConsoleApp1
 {
     interface IPh_Produkt : IProdukt
     {
-        int ProduktId { get; set; }
+        int Id { get; set; }
         int Exemplare { get; set; }
         string Autor { get; set; }
         string Titel { get; set; }
+        public string Gruppe { get; set; }
+        public string Sachgruppe { get; set; }
 
         void ErstelleExemplare();
         List<string> ExemplarSchonVorhanden();

@@ -4,33 +4,28 @@ using System.Text;
 
 namespace ConsoleApp1
 {
-    class Exemplar
+    class Exemplar : IProdukt
     {
+        public int Id { get; set; }
+        public string Titel { get; set; }
+        public string Autor { get; set; }
         public int ExemplarId { get; set; }
         public bool IstAusgeliehen { get; set; }
-        public object Buch { get; set; }
+        public object Produkt { get; set; }
 
         public Exemplar(object _object)
         {
             ExemplarId = Controller.lastCopyId + 1;
             Controller.lastCopyId++;
             IstAusgeliehen = false;
-            Type type = _object.GetType();
-            if (type == typeof(Buch))
-                Buch = (Buch)_object;
-            else
-                Buch = (Magazin)_object;
+            Produkt = _object;
         }
 
         public Exemplar(int _exemplarId, bool _istAusgeliehen, object _object)
         {
             ExemplarId = _exemplarId;
             IstAusgeliehen = _istAusgeliehen;
-            Type type = _object.GetType();
-            if (type == typeof(Buch))
-                Buch = (Buch)_object;
-            else
-                Buch = (Magazin)_object;
+            Produkt = _object;
         }
 
         public Exemplar()
@@ -38,9 +33,9 @@ namespace ConsoleApp1
 
         }
 
-        public void ÄndereEigenschaftVonExemplar(bool neuerWert)
+        public void ÄndereEigenschaft(string _eigenschaft, string neuerWert)
         {
-            IstAusgeliehen = neuerWert;
+            IstAusgeliehen = bool.Parse(neuerWert);
         }
     }
 }

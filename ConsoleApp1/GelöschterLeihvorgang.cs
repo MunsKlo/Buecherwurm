@@ -8,12 +8,12 @@ namespace ConsoleApp1
     {
         public int GelLeihvorgangId { get; set; }
         public int LeihvorgangId { get; set; }
-        public Exemplar Buch { get; set; }
+        public object Buch { get; set; }
         public string Person { get; set; }
         public string Ausleihdatum { get; set; }
         public string Rückgabedatum { get; set; }
 
-        public GelöschterLeihvorgang(int _leihvorgangid, Exemplar _buch, string _person, string _ausleihdatum, string _rückgabedatum)
+        public GelöschterLeihvorgang(int _leihvorgangid, object _buch, string _person, string _ausleihdatum, string _rückgabedatum)
         {
             GelLeihvorgangId = Controller.lastDelRentId + 1;
             Controller.lastDelRentId++;
@@ -24,7 +24,7 @@ namespace ConsoleApp1
             Rückgabedatum = _rückgabedatum;
         }
 
-        public GelöschterLeihvorgang(int _gelLeihvorgangId, int _leihvorgangid, Exemplar _buch, string _person, string _ausleihdatum, string _rückgabedatum)
+        public GelöschterLeihvorgang(int _gelLeihvorgangId, int _leihvorgangid, object _buch, string _person, string _ausleihdatum, string _rückgabedatum)
         {
             GelLeihvorgangId = _gelLeihvorgangId;
             LeihvorgangId = _leihvorgangid;

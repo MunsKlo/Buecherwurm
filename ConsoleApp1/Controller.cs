@@ -12,18 +12,18 @@ namespace ConsoleApp1
         public static List<IPh_Produkt> products = new List<IPh_Produkt>();
         public static List<Leihvorgang> rents = new List<Leihvorgang>();
         public static List<GelöschterLeihvorgang> delRents = new List<GelöschterLeihvorgang>();
-        public static List<eBook> eBooks = new List<eBook>();
+        public static List<IA_Produkt> eProducts = new List<IA_Produkt>();
         public static ControllerClass cc;
 
         public static int lastProductId;
         public static int lastCopyId;
         public static int lastRentId;
         public static int lastDelRentId;
-        public static int lastEBookId;
+        public static int lastEId;
 
         public enum Area
         {
-            Menu, Book, Magazin, Copy, Rent, DelRent
+            Menu, Book, Magazin, Copy, Rent, DelRent, EProduct
         }
 
         public static Exemplar BekommeExemplarDurchId(int id)
@@ -43,7 +43,7 @@ namespace ConsoleApp1
             {
                 foreach (var item in products)
                 {
-                    if (item.ProduktId == id)
+                    if (item.Id == id)
                         return item;
                 }
             }
@@ -51,7 +51,7 @@ namespace ConsoleApp1
             {
                 foreach (var item in products)
                 {
-                    if (item.ProduktId == id)
+                    if (item.Id == id)
                         return item;
                 }
             }
@@ -76,6 +76,15 @@ namespace ConsoleApp1
                 foreach(var item in delRents)
                 {
                     if (item.GelLeihvorgangId == id)
+                        return item;
+                }
+            }
+            else if(area == Area.EProduct)
+            {
+                foreach (var item in eProducts)
+                {
+                    var newProduct = (IPh_Produkt)item.Produkt;
+                    if (newProduct.Id == id)
                         return item;
                 }
             }
@@ -107,7 +116,7 @@ namespace ConsoleApp1
             IPh_Produkt newItem = (IPh_Produkt)newObject;
             foreach (var item in products)
             {
-                if (item.ProduktId == newItem.ProduktId)
+                if (item.Id == newItem.Id)
                 {
                     isInList = true;
                     break;
@@ -127,7 +136,7 @@ namespace ConsoleApp1
             IPh_Produkt newItem = (IPh_Produkt)newObject;
             foreach (var item in products)
             {
-                if (item.ProduktId == newItem.ProduktId)
+                if (item.Id == newItem.Id)
                 {
                     isInList = true;
                     break;
@@ -177,7 +186,7 @@ namespace ConsoleApp1
             for (int i = 0; i < copies.Count; i++)
             {
                 var newObject = (Buch)_object;
-                var newItem = (Buch)copies[i].Buch;
+                var newItem = (Buch)copies[i].Produkt;
                 if (newItem.Autor == newObject.Autor && newItem.Titel == newObject.Titel)
                 {
                     copies.Remove(copies[i]);
@@ -193,8 +202,8 @@ namespace ConsoleApp1
                 for (int i = 0; i < copies.Count; i++)
                 {
                     var newObject = (IPh_Produkt)_object;
-                    var newItem = (IPh_Produkt)copies[i].Buch;
-                    if (newItem.ProduktId == newObject.ProduktId)
+                    var newItem = (IPh_Produkt)copies[i].Produkt;
+                    if (newItem.Id == newObject.Id)
                     {
                         copies.Remove(copies[i]);
                         break;
@@ -236,8 +245,8 @@ namespace ConsoleApp1
             foreach (var item in copies)
             {
                 var newObject = (IPh_Produkt)_object;
-                var newItem = (IPh_Produkt)item.Buch;
-                if (newItem.ProduktId == newObject.ProduktId && item.IstAusgeliehen)
+                var newItem = (IPh_Produkt)item.Produkt;
+                if (newItem.Id == newObject.Id && item.IstAusgeliehen)
                 {
                     isCopieInRent = true;
                     break;
@@ -259,7 +268,11 @@ namespace ConsoleApp1
                 Leihvorgang rent = new Leihvorgang(delRent.LeihvorgangId, delRent.Buch, delRent.Person, delRent.Ausleihdatum, delRent.Rückgabedatum);
                 delRents.Remove(delRent);
                 rents.Add(rent);
-                rent.Buch.IstAusgeliehen = true;
+                if(rent.Buch.GetType() == typeof(Exemplar))
+                {
+                    var copy = (Exemplar)rent.Buch;
+                    copy.IstAusgeliehen = true;
+                }
                 Console.WriteLine("Die Wiederherstellung war erfolgreich.");
             }
             else
@@ -270,7 +283,13 @@ namespace ConsoleApp1
 
         public static bool IsCopyInRebuildingRentPresent(GelöschterLeihvorgang delRent)
         {
-            return !delRent.Buch.IstAusgeliehen;
+            if(delRent.Buch.GetType() == typeof(Exemplar))
+            {
+                var copy = (Exemplar)delRent.Buch;
+                return !copy.IstAusgeliehen;
+            }
+            return true;
+            
         }
 
         public static string IsBookBorowString(Exemplar copy)
@@ -297,8 +316,8 @@ namespace ConsoleApp1
             foreach (var item in copies)
             {
                 var newObject = (IPh_Produkt)_object;
-                var newItem = (IPh_Produkt)item.Buch;
-                if (newItem.ProduktId == newObject.ProduktId && !item.IstAusgeliehen)
+                var newItem = (IPh_Produkt)item.Produkt;
+                if (newItem.Id == newObject.Id && !item.IstAusgeliehen)
                     presentCopies.Add(item);
             }
             return presentCopies;
@@ -313,10 +332,10 @@ namespace ConsoleApp1
                 foreach (var item in products)
                 {
                     if (id == 0)
-                        id = item.ProduktId;
+                        id = item.Id;
 
-                    else if (id >= item.ProduktId)
-                        id = item.ProduktId;
+                    else if (id >= item.Id)
+                        id = item.Id;
                 }
             }
             else if (area == Area.Magazin)
@@ -324,10 +343,10 @@ namespace ConsoleApp1
                 foreach (var item in products)
                 {
                     if (id == 0)
-                        id = item.ProduktId;
+                        id = item.Id;
 
-                    else if (id >= item.ProduktId)
-                        id = item.ProduktId;
+                    else if (id >= item.Id)
+                        id = item.Id;
                 }
             }
             else if(area == Area.Copy)
@@ -374,10 +393,10 @@ namespace ConsoleApp1
                 foreach (var item in products)
                 {
                     if (id == 0)
-                        id = item.ProduktId;
+                        id = item.Id;
 
-                    else if (id <= item.ProduktId)
-                        id = item.ProduktId;
+                    else if (id <= item.Id)
+                        id = item.Id;
                 }
             }
             else if (area == Area.Magazin)
@@ -385,10 +404,10 @@ namespace ConsoleApp1
                 foreach (var item in products)
                 {
                     if (id == 0)
-                        id = item.ProduktId;
+                        id = item.Id;
 
-                    else if (id <= item.ProduktId)
-                        id = item.ProduktId;
+                    else if (id <= item.Id)
+                        id = item.Id;
                 }
             }
             else if (area == Area.Copy)
@@ -435,8 +454,8 @@ namespace ConsoleApp1
         public static void CreateEBook(object obj)
         {
             var product = (IPh_Produkt)obj;
-            eBook eBook = new eBook(product, CreateDownloadLink(product.Titel));
-            eBooks.Add(eBook);
+            EBook eBook = new EBook(obj, CreateDownloadLink(product.Titel));
+            eProducts.Add(eBook);
         }
 
         public static string CreateDownloadLink(string title)
@@ -462,7 +481,7 @@ namespace ConsoleApp1
             LastCopyId = Controller.lastCopyId;
             LastRentId = Controller.lastRentId;
             LastDelRentId = Controller.lastDelRentId;
-            LastEBookId = Controller.lastEBookId;
+            LastEBookId = Controller.lastEId;
 
         }
     }

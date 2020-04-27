@@ -7,12 +7,12 @@ namespace ConsoleApp1
     class Leihvorgang
     {
         public int LeihvorgangId { get; set; }
-        public Exemplar Buch { get; set; }
+        public object Buch { get; set; }
         public string Person { get; set; }
         public string Ausleihdatum { get; set; }
         public string Rückgabedatum { get; set; }
 
-        public Leihvorgang(Exemplar _exemplar, string _person, string _ausleihdatum)
+        public Leihvorgang(object _exemplar, string _person, string _ausleihdatum)
         {
             LeihvorgangId = Controller.lastRentId + 1;
             Controller.lastRentId++;
@@ -23,7 +23,7 @@ namespace ConsoleApp1
 
         }
 
-        public Leihvorgang(int _id, Exemplar _exemplar, string _person, string _ausleihdatum, string _rückgabedatum)
+        public Leihvorgang(int _id, object _exemplar, string _person, string _ausleihdatum, string _rückgabedatum)
         {
             LeihvorgangId = _id;
             Buch = _exemplar;
@@ -39,6 +39,7 @@ namespace ConsoleApp1
             {
                 if (eigenschaft == "Buch")
                     Buch = Controller.BekommeExemplarDurchId(Convert.ToInt32(neuerWert));
+
                 else if (eigenschaft == "Ausleihdatum")
                 {
                     Ausleihdatum = neuerWert;

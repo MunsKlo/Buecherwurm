@@ -6,7 +6,7 @@ namespace ConsoleApp1
 {
     class Buch : IPh_Produkt
     {
-        public int ProduktId { get; set; }
+        public int Id { get; set; }
         public string Autor { get; set; }
         public string Land { get; set; }
         public string BildLink { get; set; }
@@ -16,6 +16,8 @@ namespace ConsoleApp1
         public string Titel { get; set; }
         public int Jahr { get; set; }
         public int Exemplare { get; set; }
+        public string Gruppe { get; set; }
+        public string Sachgruppe { get; set; }
 
         public Buch()
         {
@@ -24,7 +26,7 @@ namespace ConsoleApp1
 
         public Buch(int _bookId, string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
-            ProduktId = _bookId;
+            Id = _bookId;
             Autor = _author;
             Land = _land;
             BildLink = _bildLink;
@@ -38,7 +40,7 @@ namespace ConsoleApp1
 
         public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr, string _exemplare)
         {
-            ProduktId = Controller.lastProductId + 1;
+            Id = Controller.lastProductId + 1;
             Controller.lastProductId++;
             Autor = _author;
             Land = _land;
@@ -53,7 +55,7 @@ namespace ConsoleApp1
         }
         public Buch(string _author, string _land, string _bildLink, string _sprache, string _link, string _seiten, string _titel, string _jahr)
         {
-            ProduktId = Controller.lastProductId + 1;
+            Id = Controller.lastProductId + 1;
             Controller.lastProductId++;
             Autor = _author;
             Land = _land;
@@ -87,7 +89,7 @@ namespace ConsoleApp1
             var counter = 0;
             for (int i = 0; i < Controller.copies.Count; i++)
             {
-                if (Controller.copies[i].Buch == this)
+                if (Controller.copies[i].Produkt == this)
                     counter++;
             }
             if (counter == Exemplare)
