@@ -143,20 +143,38 @@ namespace ConsoleApp1
 
         private static void CreateBook()
         {
-            Console.Clear();
-            Console.WriteLine("Füllen Sie die Daten auf");
-            var author = GetUserInputData("Autor", false);
-            var country = GetUserInputData("Land", false);
-            var imageLink = GetUserInputData("BIldlink", false);
-            var language = GetUserInputData("Sprache", false);
-            var link = GetUserInputData("Link", false);
-            var pages = GetUserInputData("Seiten", true);
-            var title = GetUserInputData("Titel", false);
-            var year = GetUserInputData("Jahr", true);
-            var exemplare = GetUserInputData("Exemplare", true);
+            if (Controller.YesAndNoInput("Ist das zu erstellende Objekt ein Buch? [j/n]"))
+            {
+                Console.Clear();
+                Console.WriteLine("Füllen Sie die Daten auf");
+                var author = GetUserInputData("Autor", false);
+                var country = GetUserInputData("Land", false);
+                var imageLink = GetUserInputData("BIldlink", false);
+                var language = GetUserInputData("Sprache", false);
+                var link = GetUserInputData("Link", false);
+                var pages = GetUserInputData("Seiten", true);
+                var title = GetUserInputData("Titel", false);
+                var year = GetUserInputData("Jahr", true);
+                var exemplare = GetUserInputData("Exemplare", true);
 
-            var book = new Buch(author, country, imageLink, language, link, pages, title, year, exemplare);
-            Controller.products.Add(book);
+                var book = new Buch(author, country, imageLink, language, link, pages, title, year, exemplare);
+                Controller.CreateEBook(book);
+                Controller.products.Add(book);
+            }
+            else
+            {
+                var author = GetUserInputData("Autor", false);
+                var title = GetUserInputData("Titel", false);
+                var group = GetUserInputData("Gruppe", false);
+                var topicGroup = GetUserInputData("Sachgruppe", false);
+                var copies = GetUserInputData("Exemplare", true);
+
+                var magazine = new Magazin(author, title, copies.ToString(), group, topicGroup);
+                Controller.CreateEPapper(magazine);
+                Controller.products.Add(magazine);
+            }
+            
+            
         }
 
         private static void EditBook()
@@ -188,7 +206,6 @@ namespace ConsoleApp1
                         OutputOfThings.ReadKeyMethod();
                     }
                 }
-                
             }
         }
 
@@ -481,11 +498,8 @@ namespace ConsoleApp1
                 {
                     if (WantAEBook())
                     {
-                        while (true)
-                        {
-                            var eBook = Controller.GetObjectThroughNumber(book.Id, Controller.Area.EProduct);
-                            return eBook;
-                        }
+                        var eBook = Controller.GetObjectThroughNumber(book.Id, Controller.Area.EProduct);
+                        return eBook;
                     }
                     else
                     {
@@ -578,12 +592,22 @@ namespace ConsoleApp1
                     if (property == "Ausleihdatum" || property == "Rückgabedatum")
                     {
                         newValue = GetRentBeginDate();
+                        rent.LeihvorgangBearbeiten(property, newValue);
                     }
                     else if (property == "Buch")
                     {
                         OutputOfThings.OutputLists(Controller.Area.Book);
                         newValue = Input(Controller.GetLowestNumberInList(Controller.Area.Book), Controller.GetHighestNumberInList(Controller.Area.Book), "z");
-                        var book = Controller.GetObjectThroughNumber(Convert.ToInt32(newValue), Controller.Area.Book);
+                        var book = (IPh_Produkt)Controller.GetObjectThroughNumber(Convert.ToInt32(newValue), Controller.Area.Book);
+                        if (WantAEBook())
+                        {
+                            var eProduct = Controller.GetObjectThroughNumber(book.Id, Controller.Area.EProduct);
+                            var copy = (Exemplar)rent.Buch;
+                            copy.IstAusgeliehen = false;
+                            rent.Buch = eProduct;
+                            break;
+                        }
+                        
                         var list = Controller.GetPresentCopies(book);
                         if (list.Count == 0)
                             Console.WriteLine("Dieses Buch ist zurzeit nicht auf Lager.");
@@ -600,6 +624,7 @@ namespace ConsoleApp1
                                 copy = (Exemplar)rent.Buch;
                                 copy.IstAusgeliehen = false;
                                 rent.LeihvorgangBearbeiten(property, input);
+                                copy = (Exemplar)rent.Buch;
                                 copy.IstAusgeliehen = true;
                             }
                                 

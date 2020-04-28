@@ -43,7 +43,7 @@ namespace ConsoleApp1
                 else if (eigenschaft == "Ausleihdatum")
                 {
                     Ausleihdatum = neuerWert;
-                    ErrechneDatum(neuerWert);
+                    Rückgabedatum = ErrechneDatum(neuerWert);
                 }
                 else if (eigenschaft == "Rückgabedatum")
                     Rückgabedatum = neuerWert;

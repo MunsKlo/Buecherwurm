@@ -458,6 +458,26 @@ namespace ConsoleApp1
             eProducts.Add(eBook);
         }
 
+        public static void CreateEPapper(object obj)
+        {
+            var product = (IPh_Produkt)obj;
+            EPapper ePapper = new EPapper(obj, CreateDownloadLink(product.Titel));
+            eProducts.Add(ePapper);
+        }
+
+        public static bool YesAndNoInput(string description)
+        {
+            var input = "";
+            while (true)
+            {
+                Console.WriteLine(description);
+                input = Console.ReadLine();
+                if (input == "j" || input == "n")
+                    break;
+            }
+            return input == "j";
+        }
+
         public static string CreateDownloadLink(string title)
         {
             if (title.Contains(" "))
@@ -472,7 +492,6 @@ namespace ConsoleApp1
         public int LastCopyId { get; set; }
         public int LastRentId { get; set; }
         public int LastDelRentId { get; set; }
-        public int LastMagazinId { get; set; }
         public int LastEBookId { get; set; }
 
         public ControllerClass()
